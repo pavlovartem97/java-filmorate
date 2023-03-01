@@ -1,11 +1,12 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.ValidationException;
+import ru.yandex.practicum.filmorate.validators.UserValidator;
+import ru.yandex.practicum.filmorate.validators.ValidationException;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +27,8 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User user) throws ValidationException {
-        validate(user);
+    public User create(@Valid @RequestBody User user) throws ValidationException {
+        UserValidator.validate(user);
         user.setId(++userId);
         users.put(user.getId(), user);
         log.info("Добавлен пользователь: " + user);
@@ -35,8 +36,8 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@RequestBody User user) throws ValidationException {
-        validate(user);
+    public User update(@Valid @RequestBody User user) throws ValidationException {
+        UserValidator.validate(user);
         if (user.getId() == null) {
             log.error("Не задан Id пользователя");
             throw new ValidationException("Не задан Id пользователя");
@@ -48,37 +49,5 @@ public class UserController {
         users.put(user.getId(), user);
         log.info("Обновлены данные пользователя: " + user);
         return user;
-    }
-
-    private void validate(User user) throws ValidationException {
-        if (user.getLogin() == null || user.getLogin().isEmpty()) {
-            log.error("Логин не может быть пустым");
-            throw new ValidationException("Логин не может быть пустым");
-        }
-        if (user.getLogin().contains(" ")) {
-            log.error("Логин не может содержать пробелы");
-            throw new ValidationException("Логин не может содержать пробелы");
-        }
-        if (user.getEmail() == null) {
-            log.error("Электронная почта не может быть пустой");
-            throw new ValidationException("Электронная почта не может быть пустой");
-        }
-        if (!user.getEmail().contains("@")) {
-            log.error("Электронная почта должна содержать @");
-            throw new ValidationException("Электронная почта должна содержать @");
-        }
-        if (user.getBirthday() == null) {
-            log.error("Дата рождения должна быть задана");
-            throw new ValidationException("Дата рождения должна быть задана");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.error("Дата рождения не может быть в будущем");
-            throw new ValidationException("Дата рождения не может быть в будущем");
-        }
-        if (user.getName() == null || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-            log.info("Пусоое имя было заменено на логин: " + user.getLogin());
-        }
-        log.info("Валидация успешно пройдена");
     }
 }
