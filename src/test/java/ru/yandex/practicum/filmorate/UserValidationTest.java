@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,20 +20,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 public class UserValidationTest {
 
-    private static final Validator validator;
-
-    static {
-        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-        validator = validatorFactory.usingContext().getValidator();
-    }
+    private Validator validator;
 
     private static final LocalDate BIRTH_DATE = LocalDate.of(1980, 10, 10);
 
-    private final UserValidator userValidator;
-
     @Autowired
-    public UserValidationTest(UserValidator userValidator) {
-        this.userValidator = userValidator;
+    private UserValidator userValidator;
+
+    @BeforeEach
+    void beforeEach() {
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.usingContext().getValidator();
     }
 
     @Test

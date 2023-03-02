@@ -22,7 +22,7 @@ public class FilmController {
 
     private final Map<Integer, Film> films = new HashMap<>();
 
-    private static int filmId = 0;
+    private static int filmId;
 
     @Autowired
     public FilmController(FilmValidator filmValidator) {
