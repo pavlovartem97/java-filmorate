@@ -1,10 +1,11 @@
 package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.validators.FilmValidator;
-import ru.yandex.practicum.filmorate.validators.ValidationException;
+import ru.yandex.practicum.filmorate.validator.FilmValidator;
+import ru.yandex.practicum.filmorate.validator.ValidationException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -27,6 +28,13 @@ public class FilmValidationTests {
 
     private static final LocalDate releaseDate = LocalDate.of(1980, 10, 10);
 
+    private final FilmValidator filmValidator;
+
+    @Autowired
+    public FilmValidationTests(FilmValidator filmValidator) {
+        this.filmValidator = filmValidator;
+    }
+
     @Test
     void filmCreateTest() {
         Film film = Film.builder()
@@ -35,7 +43,7 @@ public class FilmValidationTests {
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(0, violations.size());
 
-        assertDoesNotThrow(() -> FilmValidator.validate(film));
+        assertDoesNotThrow(() -> filmValidator.validate(film));
     }
 
     @Test
@@ -44,7 +52,7 @@ public class FilmValidationTests {
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(1, violations.size());
-        assertDoesNotThrow(() -> FilmValidator.validate(film));
+        assertDoesNotThrow(() -> filmValidator.validate(film));
     }
 
     @Test
@@ -57,7 +65,7 @@ public class FilmValidationTests {
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(1, violations.size());
-        assertDoesNotThrow(() -> FilmValidator.validate(film));
+        assertDoesNotThrow(() -> filmValidator.validate(film));
     }
 
     @Test
@@ -69,7 +77,7 @@ public class FilmValidationTests {
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(0, violations.size());
 
-        assertThrows(ValidationException.class, () -> FilmValidator.validate(film));
+        assertThrows(ValidationException.class, () -> filmValidator.validate(film));
     }
 
     @Test
@@ -80,6 +88,6 @@ public class FilmValidationTests {
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(1, violations.size());
-        assertDoesNotThrow(() -> FilmValidator.validate(film));
+        assertDoesNotThrow(() -> filmValidator.validate(film));
     }
 }

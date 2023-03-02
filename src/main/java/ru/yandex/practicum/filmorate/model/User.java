@@ -4,8 +4,9 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 @Data
@@ -15,12 +16,13 @@ public class User {
 
     private String name;
 
-    @Email(message = "Почта задана в неверном формате")
+    @Email(message = "Email is in wrong format")
     private String email;
 
-    @NotBlank(message = "Логин не может быть пустым или содержать только пробелы")
+    @NotEmpty(message = "Login cannot be empty")
+    @Pattern(regexp = "\\S+", message = "Login cannot contain spaces")
     private String login;
 
-    @Past(message = "некорректная дата рождения")
+    @Past(message = "Birthday is in the wrong format")
     private LocalDate birthday;
 }

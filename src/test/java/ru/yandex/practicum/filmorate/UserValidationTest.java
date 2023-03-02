@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.validators.UserValidator;
-import ru.yandex.practicum.filmorate.validators.ValidationException;
+import ru.yandex.practicum.filmorate.validator.UserValidator;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -13,7 +13,8 @@ import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 public class UserValidationTest {
@@ -25,36 +26,41 @@ public class UserValidationTest {
         validator = validatorFactory.usingContext().getValidator();
     }
 
-    private static final LocalDate birthDate = LocalDate.of(1980, 10, 10);
+    private static final LocalDate BIRTH_DATE = LocalDate.of(1980, 10, 10);
+
+    private final UserValidator userValidator;
+
+    @Autowired
+    public UserValidationTest(UserValidator userValidator) {
+        this.userValidator = userValidator;
+    }
 
     @Test
     void userCreateTest() {
-        User user = User.builder().name("Artem").login("Art").birthday(birthDate).email("artem@gmail.com").build();
+        User user = User.builder().name("Artem").login("Art").birthday(BIRTH_DATE).email("artem@gmail.com").build();
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertEquals(0, violations.size());
 
-        assertDoesNotThrow(() -> UserValidator.validate(user));
+        assertDoesNotThrow(() -> userValidator.validate(user));
     }
 
     @Test
     void userCreateFailLoginTest() {
-        User user = User.builder().name("Artem").login("Artem Pavlov").birthday(birthDate).email("artem@gmail.com").build();
+        User user = User.builder().name("Artem").login("Artem Pavlov").birthday(BIRTH_DATE).email("artem@gmail.com").build();
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertEquals(0, violations.size());
-
-        assertThrows(ValidationException.class, () -> UserValidator.validate(user));
+        assertEquals(1, violations.size());
     }
 
     @Test
     void userCreateFailEmailTest() {
-        User user = User.builder().name("Artem").login("art").birthday(birthDate).email("gmail.com").build();
+        User user = User.builder().name("Artem").login("art").birthday(BIRTH_DATE).email("gmail.com").build();
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertEquals(1, violations.size());
 
-        assertDoesNotThrow(() -> UserValidator.validate(user));
+        assertDoesNotThrow(() -> userValidator.validate(user));
     }
 
     @Test
@@ -65,18 +71,18 @@ public class UserValidationTest {
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertEquals(1, violations.size());
 
-        assertDoesNotThrow(() -> UserValidator.validate(user));
+        assertDoesNotThrow(() -> userValidator.validate(user));
     }
 
     @Test
     void userCreateWithEmptyNameTest() {
-        User user = User.builder().login("art").birthday(birthDate)
+        User user = User.builder().login("art").birthday(BIRTH_DATE)
                 .email("artem@gmail.com").build();
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertEquals(0, violations.size());
 
-        assertDoesNotThrow(() -> UserValidator.validate(user));
+        assertDoesNotThrow(() -> userValidator.validate(user));
 
         assertEquals(user.getName(), user.getLogin());
     }
