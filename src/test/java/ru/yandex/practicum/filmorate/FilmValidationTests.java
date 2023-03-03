@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
-import ru.yandex.practicum.filmorate.validator.ValidationException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
