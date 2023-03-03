@@ -73,8 +73,8 @@ public class FilmController {
 
     @PutMapping("/{id}/like/{userId}")
     public void addLikeToFilm(@PathVariable Optional<Integer> id, @PathVariable Optional<Integer> userId) {
-        if (!id.isPresent() || !userId.isPresent()) {
-            throw new RuntimeException("");
+        if (id.isEmpty() || userId.isEmpty()) {
+            throw new RuntimeException("Path variable should contain id and userId");
         }
         filmService.addLike(id.get(), userId.get());
         log.info("User " + userId + " likes film " + id);
@@ -82,8 +82,8 @@ public class FilmController {
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(@PathVariable Optional<Integer> id, @PathVariable Optional<Integer> userId) {
-        if (!id.isPresent() || !userId.isPresent()) {
-            throw new RuntimeException("");
+        if (id.isEmpty() || userId.isEmpty()) {
+            throw new RuntimeException("Path variable should contain id and userId");
         }
         filmService.addLike(id.get(), userId.get());
         log.info("User " + userId + " removes like from film " + id);

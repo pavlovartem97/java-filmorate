@@ -73,8 +73,8 @@ public class UserController {
 
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable Optional<Integer> id, @PathVariable Optional<Integer> friendId) {
-        if (!id.isPresent() || !friendId.isPresent()) {
-            throw new RuntimeException("");
+        if (id.isEmpty() || friendId.isEmpty()) {
+            throw new RuntimeException("Path variable should contain id and friendId");
         }
         userService.addFriend(id.get(), friendId.get());
         log.info("Put friend " + friendId.get() + " for user " + id.get());
@@ -82,8 +82,8 @@ public class UserController {
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void removeFriend(@PathVariable Optional<Integer> id, @PathVariable Optional<Integer> friendId) {
-        if (!id.isPresent() || !friendId.isPresent()) {
-            throw new RuntimeException("");
+        if (id.isEmpty() || friendId.isEmpty()) {
+            throw new RuntimeException("Path variable should contain id and friendId");
         }
         userService.removeFriend(id.get(), friendId.get());
         log.info("Delete friend " + friendId.get() + " for user " + id.get());
@@ -91,8 +91,8 @@ public class UserController {
 
     @GetMapping("/{id}/friends")
     public List<User> getUserFriends(@PathVariable Optional<Integer> id) {
-        if (!id.isPresent()) {
-            throw new RuntimeException("");
+        if (id.isEmpty()) {
+            throw new RuntimeException("Path variable should contain id");
         }
         List<User> userFriends = userService.getUserFriends(id.get());
         log.info("Get friend for user " + id.get());
@@ -101,8 +101,8 @@ public class UserController {
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable Optional<Integer> id, @PathVariable Optional<Integer> otherId) {
-        if (!id.isPresent() || !otherId.isPresent()) {
-            throw new RuntimeException("");
+        if (id.isEmpty() || otherId.isEmpty()) {
+            throw new RuntimeException("Path variable should contain id and otherId");
         }
         List<User> commonFriends = userService.getCommonFriends(id.get(), otherId.get());
         log.info("Get common friends for users " + id + " " + otherId + " : " + commonFriends);

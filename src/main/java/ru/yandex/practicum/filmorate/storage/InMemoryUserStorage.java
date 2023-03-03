@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.UserNotFountException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -23,7 +23,7 @@ public class InMemoryUserStorage implements UserStorage {
         if (users.containsKey(user.getId())) {
             users.put(user.getId(), user);
         } else {
-            throw new UserNotFountException("Film with Id " + user.getId() + " not found");
+            throw new UserNotFoundException("Film with Id " + user.getId() + " not found");
         }
     }
 
@@ -32,7 +32,7 @@ public class InMemoryUserStorage implements UserStorage {
         if (users.containsKey(user.getId())) {
             users.remove(user.getId());
         } else {
-            throw new UserNotFountException("Film with Id " + user.getId() + " not found");
+            throw new UserNotFoundException("Film with Id " + user.getId() + " not found");
         }
     }
 
@@ -46,6 +46,6 @@ public class InMemoryUserStorage implements UserStorage {
         if (users.containsKey(userId)) {
             return users.get(userId);
         }
-        throw new UserNotFountException("Film with Id " + userId + " not found");
+        throw new UserNotFoundException("Film with Id " + userId + " not found");
     }
 }
