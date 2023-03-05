@@ -18,34 +18,35 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.values();
     }
 
+    private static int filmId;
+
     @Override
     public void addFilm(Film film) {
+        film.setId(++filmId);
         films.put(film.getId(), film);
     }
 
     @Override
     public void updateFilm(Film film) {
-        if (films.containsKey(film.getId())) {
-            films.put(film.getId(), film);
-        } else {
+        if (!films.containsKey(film.getId())) {
             throw new FilmNotFoundException("Film with Id " + film.getId() + " not found");
         }
+        films.put(film.getId(), film);
     }
 
     @Override
     public void deleteFilm(Film film) {
-        if (films.containsKey(film.getId())) {
-            films.remove(film.getId());
-        } else {
+        if (!films.containsKey(film.getId())) {
             throw new FilmNotFoundException("Film with Id " + film.getId() + " not found");
         }
+        films.remove(film.getId());
     }
 
     @Override
     public Film getFilmById(int id) {
-        if (films.containsKey(id)) {
-            return films.get(id);
+        if (!films.containsKey(id)) {
+            throw new FilmNotFoundException("Film with Id " + id + " not found");
         }
-        throw new FilmNotFoundException("Film with Id " + id + " not found");
+        return films.get(id);
     }
 }

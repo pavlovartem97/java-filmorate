@@ -14,6 +14,7 @@ import java.util.Set;
 @Data
 @Builder
 public class Film {
+
     private Integer id;
 
     @NotBlank(message = "Film name cannot be blank")
@@ -29,12 +30,5 @@ public class Film {
     @Positive
     private Integer duration;
 
-    private Set<Integer> likesId = new HashSet<>();
-
-    public Set<Integer> getLikesId() {
-        if (likesId == null){
-            likesId = new HashSet<>();
-        }
-        return likesId;
-    }
+    private final Set<Integer> likeIds = new HashSet<>();
 }

@@ -28,12 +28,5 @@ public class User {
     @Past(message = "Birthday is in the wrong format")
     private LocalDate birthday;
 
-    private Set<Integer> friendsId = new HashSet<>();
-
-    public Set<Integer> getFriendsId() {
-        if (friendsId == null){
-            friendsId = new HashSet<>();
-        }
-        return friendsId;
-    }
+    private final Set<Integer> friendIds = new HashSet<>();
 }

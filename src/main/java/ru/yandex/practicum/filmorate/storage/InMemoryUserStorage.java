@@ -13,27 +13,28 @@ public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Integer, User> users = new HashMap<>();
 
+    private static int userId;
+
     @Override
     public void addUser(User user) {
+        user.setId(++userId);
         users.put(user.getId(), user);
     }
 
     @Override
     public void updateUser(User user) {
-        if (users.containsKey(user.getId())) {
-            users.put(user.getId(), user);
-        } else {
+        if (!users.containsKey(user.getId())) {
             throw new UserNotFoundException("Film with Id " + user.getId() + " not found");
         }
+        users.put(user.getId(), user);
     }
 
     @Override
     public void deleteUser(User user) {
-        if (users.containsKey(user.getId())) {
-            users.remove(user.getId());
-        } else {
+        if (!users.containsKey(user.getId())) {
             throw new UserNotFoundException("Film with Id " + user.getId() + " not found");
         }
+        users.remove(user.getId());
     }
 
     @Override
@@ -43,9 +44,9 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User getUserById(int userId) {
-        if (users.containsKey(userId)) {
-            return users.get(userId);
+        if (!users.containsKey(userId)) {
+            throw new UserNotFoundException("Film with Id " + userId + " not found");
         }
-        throw new UserNotFoundException("Film with Id " + userId + " not found");
+        return users.get(userId);
     }
 }
