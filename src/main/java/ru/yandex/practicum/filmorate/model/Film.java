@@ -8,10 +8,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
 public class Film {
+
     private Integer id;
 
     @NotBlank(message = "Film name cannot be blank")
@@ -26,4 +29,6 @@ public class Film {
 
     @Positive
     private Integer duration;
+
+    private final Set<Integer> likeIds = new HashSet<>();
 }

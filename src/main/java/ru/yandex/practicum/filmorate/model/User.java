@@ -8,6 +8,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
@@ -25,4 +27,6 @@ public class User {
 
     @Past(message = "Birthday is in the wrong format")
     private LocalDate birthday;
+
+    private final Set<Integer> friendIds = new HashSet<>();
 }
