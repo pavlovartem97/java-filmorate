@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +46,7 @@ public class FilmService {
 
     public List<Film> topFilms(int count) {
         List<Film> topFilms = filmStorage.getAllFilm().stream()
-                .sorted((film1, film2) -> film2.getLikeIds().size() - film1.getLikeIds().size())
+                .sorted(Comparator.comparing(f -> f.getLikeIds().size(), Comparator.reverseOrder()))
                 .limit(count)
                 .collect(Collectors.toList());
         log.info("Get top films " + topFilms);
@@ -69,7 +70,6 @@ public class FilmService {
         filmStorage.addFilm(film);
         log.info("New film creating: " + film);
     }
-
 
     public void updateFilm(Film film) {
         filmValidator.validate(film);

@@ -11,14 +11,14 @@ import java.util.Map;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
+    private static int filmId;
+
     private final Map<Integer, Film> films = new HashMap<>();
 
     @Override
     public Collection<Film> getAllFilm() {
         return films.values();
     }
-
-    private static int filmId;
 
     @Override
     public void addFilm(Film film) {

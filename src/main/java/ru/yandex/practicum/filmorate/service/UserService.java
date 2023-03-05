@@ -48,7 +48,9 @@ public class UserService {
         User user2 = userStorage.getUserById(userId2);
         Set<Integer> intersection = new HashSet<>(user1.getFriendIds());
         intersection.retainAll(user2.getFriendIds());
-        List<User> commonFriends = intersection.stream().map(userStorage::getUserById).collect(Collectors.toList());
+        List<User> commonFriends = intersection.stream()
+                .map(userStorage::getUserById)
+                .collect(Collectors.toList());
         log.info("Get common friends for users " + userId1 + " " + userId2 + " : " + commonFriends);
         return commonFriends;
     }
@@ -85,6 +87,5 @@ public class UserService {
         userStorage.updateUser(user);
         log.info("User updating: " + user);
     }
-
 
 }
