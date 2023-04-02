@@ -20,9 +20,6 @@ import java.util.List;
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserDbStorageTests {
-    private EmbeddedDatabase embeddedDatabase;
-
-    private JdbcTemplate jdbcTemplate;
 
     private UserDbStorage userDbStorage;
 
@@ -30,13 +27,13 @@ public class UserDbStorageTests {
 
     @BeforeEach
     public void setUp() {
-        embeddedDatabase = new EmbeddedDatabaseBuilder()
+        EmbeddedDatabase embeddedDatabase = new EmbeddedDatabaseBuilder()
                 .addScript("schema.sql")
                 .addScript("data.sql")
                 .addScript("test-data.sql")
                 .setType(EmbeddedDatabaseType.H2)
                 .build();
-        jdbcTemplate = new JdbcTemplate(embeddedDatabase);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
         userDbStorage = new UserDbStorage(jdbcTemplate, userMapper);
     }
 

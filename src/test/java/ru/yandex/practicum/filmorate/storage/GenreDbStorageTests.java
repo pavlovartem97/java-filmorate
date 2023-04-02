@@ -2,14 +2,9 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 
@@ -18,23 +13,10 @@ import java.util.List;
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GenreDbStorageTests {
-    private EmbeddedDatabase embeddedDatabase;
-
-    private JdbcTemplate jdbcTemplate;
 
     private final GenreDbStorage genreDbStorage;
 
     private final List<String> genreList = List.of("Комедия", "Драма", "Мультфильм", "Триллер", "Документальный", "Боевик");
-
-    @BeforeEach
-    public void setUp() {
-        embeddedDatabase = new EmbeddedDatabaseBuilder()
-                .addScript("schema.sql")
-                .addScript("data.sql")
-                .setType(EmbeddedDatabaseType.H2)
-                .build();
-        jdbcTemplate = new JdbcTemplate(embeddedDatabase);
-    }
 
     @Test
     public void testFindGenreById() {

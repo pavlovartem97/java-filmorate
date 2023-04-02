@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
-import org.h2.engine.UserBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,9 +19,6 @@ import java.util.List;
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FriendDbStorageTests {
-    private EmbeddedDatabase embeddedDatabase;
-
-    private JdbcTemplate jdbcTemplate;
 
     private FriendDbStorage friendDbStorage;
 
@@ -30,13 +26,13 @@ public class FriendDbStorageTests {
 
     @BeforeEach
     public void setUp() {
-        embeddedDatabase = new EmbeddedDatabaseBuilder()
+        EmbeddedDatabase embeddedDatabase = new EmbeddedDatabaseBuilder()
                 .addScript("schema.sql")
                 .addScript("data.sql")
                 .addScript("test-data.sql")
                 .setType(EmbeddedDatabaseType.H2)
                 .build();
-        jdbcTemplate = new JdbcTemplate(embeddedDatabase);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
         friendDbStorage = new FriendDbStorage(jdbcTemplate, userMapper);
     }
 

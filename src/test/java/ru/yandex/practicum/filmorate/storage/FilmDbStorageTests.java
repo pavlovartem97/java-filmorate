@@ -23,9 +23,6 @@ import java.util.Set;
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmDbStorageTests {
-    private EmbeddedDatabase embeddedDatabase;
-
-    private JdbcTemplate jdbcTemplate;
 
     private FilmDbStorage filmDbStorage;
 
@@ -33,13 +30,13 @@ public class FilmDbStorageTests {
 
     @BeforeEach
     public void setUp() {
-        embeddedDatabase = new EmbeddedDatabaseBuilder()
+        EmbeddedDatabase embeddedDatabase = new EmbeddedDatabaseBuilder()
                 .addScript("schema.sql")
                 .addScript("data.sql")
                 .addScript("test-data.sql")
                 .setType(EmbeddedDatabaseType.H2)
                 .build();
-        jdbcTemplate = new JdbcTemplate(embeddedDatabase);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
         filmDbStorage = new FilmDbStorage(jdbcTemplate, filmExtractor);
     }
 

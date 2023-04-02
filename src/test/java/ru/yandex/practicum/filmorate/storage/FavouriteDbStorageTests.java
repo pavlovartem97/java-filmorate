@@ -11,9 +11,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.favourite.FavouriteDbStorage;
-import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmExtractor;
 
 import java.util.List;
@@ -21,9 +19,6 @@ import java.util.List;
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FavouriteDbStorageTests {
-    private EmbeddedDatabase embeddedDatabase;
-
-    private JdbcTemplate jdbcTemplate;
 
     private FavouriteDbStorage favouriteDbStorage;
 
@@ -31,13 +26,13 @@ public class FavouriteDbStorageTests {
 
     @BeforeEach
     public void setUp() {
-        embeddedDatabase = new EmbeddedDatabaseBuilder()
+        EmbeddedDatabase embeddedDatabase = new EmbeddedDatabaseBuilder()
                 .addScript("schema.sql")
                 .addScript("data.sql")
                 .addScript("test-data.sql")
                 .setType(EmbeddedDatabaseType.H2)
                 .build();
-        jdbcTemplate = new JdbcTemplate(embeddedDatabase);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
         favouriteDbStorage = new FavouriteDbStorage(jdbcTemplate, filmExtractor);
     }
 
