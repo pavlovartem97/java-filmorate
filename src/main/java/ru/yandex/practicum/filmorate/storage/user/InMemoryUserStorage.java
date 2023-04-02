@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
+@Component("inMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
 
     private static int userId;
@@ -16,15 +16,16 @@ public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
 
     @Override
-    public void addUser(User user) {
+    public User addUser(User user) {
         user.setId(++userId);
         users.put(user.getId(), user);
+        return user;
     }
 
     @Override
     public void updateUser(User user) {
         if (!users.containsKey(user.getId())) {
-            throw new UserNotFoundException("Film with Id " + user.getId() + " not found");
+            throw new UserNotFoundException("User with Id " + user.getId() + " is not found");
         }
         users.put(user.getId(), user);
     }
@@ -32,7 +33,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void deleteUser(User user) {
         if (!users.containsKey(user.getId())) {
-            throw new UserNotFoundException("Film with Id " + user.getId() + " not found");
+            throw new UserNotFoundException("User with Id " + user.getId() + " is not found");
         }
         users.remove(user.getId());
     }
@@ -45,7 +46,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User getUserById(int userId) {
         if (!users.containsKey(userId)) {
-            throw new UserNotFoundException("Film with Id " + userId + " not found");
+            throw new UserNotFoundException("User with Id " + userId + " is not found");
         }
         return users.get(userId);
     }

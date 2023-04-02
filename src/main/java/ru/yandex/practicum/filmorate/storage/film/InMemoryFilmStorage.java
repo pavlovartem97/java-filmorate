@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
+@Component("inMemoryFilmStorage")
 public class InMemoryFilmStorage implements FilmStorage {
 
     private static int filmId;
@@ -29,7 +29,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public void updateFilm(Film film) {
         if (!films.containsKey(film.getId())) {
-            throw new FilmNotFoundException("Film with Id " + film.getId() + " not found");
+            throw new FilmNotFoundException("Film with Id " + film.getId() + " is not found");
         }
         films.put(film.getId(), film);
     }
@@ -37,7 +37,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public void deleteFilm(Film film) {
         if (!films.containsKey(film.getId())) {
-            throw new FilmNotFoundException("Film with Id " + film.getId() + " not found");
+            throw new FilmNotFoundException("Film with Id " + film.getId() + " is not found");
         }
         films.remove(film.getId());
     }
@@ -45,7 +45,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film getFilmById(int id) {
         if (!films.containsKey(id)) {
-            throw new FilmNotFoundException("Film with Id " + id + " not found");
+            throw new FilmNotFoundException("Film with Id " + id + " is not found");
         }
         return films.get(id);
     }

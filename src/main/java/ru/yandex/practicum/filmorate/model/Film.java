@@ -1,17 +1,25 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.Comparator;
+import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Film {
 
@@ -30,5 +38,20 @@ public class Film {
     @Positive
     private Integer duration;
 
-    private final Set<Integer> likeIds = new HashSet<>();
+    private final Set<Genre> genres = new TreeSet<>(Comparator.comparing(f -> f.getId()));
+
+    private Mpa mpa;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Film film = (Film) o;
+        return id.equals(film.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

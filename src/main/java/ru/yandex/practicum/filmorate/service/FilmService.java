@@ -1,20 +1,21 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.favourite.FavouriteStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class FilmService {
 
     private final FilmStorage filmStorage;
@@ -23,32 +24,24 @@ public class FilmService {
 
     private final FilmValidator filmValidator;
 
-    @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage, FilmValidator filmValidator) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-        this.filmValidator = filmValidator;
-    }
+    private final FavouriteStorage favouriteStorage;
 
     public void addLike(int filmId, int userId) {
         Film film = filmStorage.getFilmById(filmId);
-        userStorage.getUserById(userId);
-        film.getLikeIds().add(userId);
+        User user = userStorage.getUserById(userId);
+        favouriteStorage.addFavourite(film, user);
         log.info("User " + userId + " likes film " + filmId);
     }
 
     public void removeLike(int filmId, int userId) {
         Film film = filmStorage.getFilmById(filmId);
-        userStorage.getUserById(userId);
-        film.getLikeIds().remove(userId);
+        User user = userStorage.getUserById(userId);
+        favouriteStorage.removeFavoutite(film, user);
         log.info("User " + userId + " removes like from film " + filmId);
     }
 
     public List<Film> topFilms(int count) {
-        List<Film> topFilms = filmStorage.getAllFilm().stream()
-                .sorted(Comparator.comparing(f -> f.getLikeIds().size(), Comparator.reverseOrder()))
-                .limit(count)
-                .collect(Collectors.toList());
+        List<Film> topFilms = favouriteStorage.getTopFilm(count);
         log.info("Get top films " + topFilms);
         return topFilms;
     }

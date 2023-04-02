@@ -1,17 +1,20 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
 @Builder
 public class User {
     private Integer id;
@@ -28,5 +31,16 @@ public class User {
     @Past(message = "Birthday is in the wrong format")
     private LocalDate birthday;
 
-    private final Set<Integer> friendIds = new HashSet<>();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id.equals(user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
