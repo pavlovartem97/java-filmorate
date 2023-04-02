@@ -20,15 +20,15 @@ public class FavouriteDbStorage implements FavouriteStorage {
     private final FilmExtractor filmExtractor;
 
     @Override
-    public void addFavourite(Film film, User user) {
+    public void addFavourite(int filmId, int userId) {
         String sql = "INSERT INTO favourite (film_id, user_id) VALUES ( ?, ? )";
-        jdbcTemplate.update(sql, film.getId(), user.getId());
+        jdbcTemplate.update(sql, filmId, userId);
     }
 
     @Override
-    public void removeFavoutite(Film film, User user) {
+    public void removeFavoutite(int filmId, int userId) {
         String sql = "DELETE FROM favourite WHERE film_id = ? AND user_id = ?";
-        jdbcTemplate.update(sql, film.getId(), user.getId());
+        jdbcTemplate.update(sql, filmId, userId);
     }
 
     @Override

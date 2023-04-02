@@ -29,14 +29,14 @@ public class FilmService {
     public void addLike(int filmId, int userId) {
         Film film = filmStorage.getFilmById(filmId);
         User user = userStorage.getUserById(userId);
-        favouriteStorage.addFavourite(film, user);
+        favouriteStorage.addFavourite(film.getId(), user.getId());
         log.info("User " + userId + " likes film " + filmId);
     }
 
     public void removeLike(int filmId, int userId) {
         Film film = filmStorage.getFilmById(filmId);
         User user = userStorage.getUserById(userId);
-        favouriteStorage.removeFavoutite(film, user);
+        favouriteStorage.removeFavoutite(film.getId(), user.getId());
         log.info("User " + userId + " removes like from film " + filmId);
     }
 

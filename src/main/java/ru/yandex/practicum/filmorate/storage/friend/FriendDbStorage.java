@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.fried;
+package ru.yandex.practicum.filmorate.storage.friend;
 
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -19,35 +19,35 @@ public class FriendDbStorage implements FriendStorage {
     private final UserMapper userMapper;
 
     @Override
-    public void addFriend(User user, User friend) {
+    public void addFriend(int userId, int friendId) {
         String sql = "SELECT FROM friend WHERE friend_id = ? AND user_id = ?";
-        int checkFriend = jdbcTemplate.query(sql, (rs, rowNum) -> 1, user.getId(), friend.getId()).size();
+        int checkFriend = jdbcTemplate.query(sql, (rs, rowNum) -> 1, userId, friendId).size();
 
         if (checkFriend != 0) {
             sql = "INSERT INTO friend (friend_id, user_id, status) VALUES ( ?, ?, TRUE )";
-            jdbcTemplate.update(sql, friend.getId(), user.getId());
+            jdbcTemplate.update(sql, friendId, userId);
 
             sql = "UPDATE friend SET status = TRUE " +
                     "WHERE friend_id = ? AND user_id = ?";
-            jdbcTemplate.update(sql, user.getId(), friend.getId());
+            jdbcTemplate.update(sql, userId, friendId);
         } else {
             sql = "INSERT INTO friend (friend_id, user_id, status) VALUES ( ?, ?, FALSE )";
-            jdbcTemplate.update(sql, friend.getId(), user.getId());
+            jdbcTemplate.update(sql, friendId, userId);
         }
     }
 
     @Override
-    public void removeFriend(User user, User friend) {
+    public void removeFriend(int userId, int friendId) {
         String sql = "DELETE FROM friend WHERE user_id = ? AND friend_id = ?";
-        jdbcTemplate.update(sql, user.getId(), friend.getId());
+        jdbcTemplate.update(sql, userId, friendId);
 
         sql = "UPDATE friend SET status = FALSE " +
                 "WHERE friend_id = ? AND user_id = ?";
-        jdbcTemplate.update(sql, user.getId(), friend.getId());
+        jdbcTemplate.update(sql, userId, friendId);
     }
 
     @Override
-    public List<User> getCommonFriends(User user1, User user2) {
+    public List<User> getCommonFriends(int userId1, int userId2) {
         String sql =
                 "SELECT * " +
                 "FROM filmorate_user " +
@@ -58,17 +58,17 @@ public class FriendDbStorage implements FriendStorage {
                 "        AND friend_id IN (SELECT friend_id " +
                 "                FROM friend " +
                 "                WHERE user_id = ?)) ";
-        return jdbcTemplate.query(sql, userMapper, user1.getId(), user2.getId(), user1.getId());
+        return jdbcTemplate.query(sql, userMapper, userId1, userId2, userId1);
     }
 
     @Override
-    public List<User> getFriends(User user) {
+    public List<User> getFriends(int userId) {
         String sql =
                 "SELECT * " +
                 "FROM filmorate_user " +
                 "WHERE user_id IN (SELECT friend_id " +
                 "        FROM friend " +
                 "        WHERE user_id = ?)";
-        return jdbcTemplate.query(sql, userMapper, user.getId());
+        return jdbcTemplate.query(sql, userMapper, userId);
     }
 }

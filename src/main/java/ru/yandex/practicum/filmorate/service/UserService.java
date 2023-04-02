@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.fried.FriendStorage;
+import ru.yandex.practicum.filmorate.storage.friend.FriendStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.validator.UserValidator;
 
@@ -27,28 +27,28 @@ public class UserService {
     public void addFriend(int id, int friendId) {
         User user1 = userStorage.getUserById(id);
         User user2 = userStorage.getUserById(friendId);
-        friendStorage.addFriend(user1, user2);
+        friendStorage.addFriend(user1.getId(), user2.getId());
         log.info("Put friend " + friendId + " for user " + id);
     }
 
     public void removeFriend(int id, int friendId) {
         User user1 = userStorage.getUserById(id);
         User user2 = userStorage.getUserById(friendId);
-        friendStorage.removeFriend(user1, user2);
+        friendStorage.removeFriend(user1.getId(), user2.getId());
         log.info("Delete friend " + friendId + " for user " + id);
     }
 
     public List<User> getCommonFriends(int userId1, int userId2) {
         User user1 = userStorage.getUserById(userId1);
         User user2 = userStorage.getUserById(userId2);
-        List<User> commonFriends = friendStorage.getCommonFriends(user1, user2);
+        List<User> commonFriends = friendStorage.getCommonFriends(user1.getId(), user2.getId());
         log.info("Get common friends for users " + userId1 + " " + userId2 + " : " + commonFriends);
         return commonFriends;
     }
 
     public List<User> getUserFriends(int userId) {
         User user = userStorage.getUserById(userId);
-        List<User> friends = friendStorage.getFriends(user);
+        List<User> friends = friendStorage.getFriends(user.getId());
         log.info("Get friend for user " + userId);
         return friends;
     }

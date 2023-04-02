@@ -3,10 +3,13 @@ package ru.yandex.practicum.filmorate.storage.favourite;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -15,19 +18,19 @@ public class InMemoryFavouriteStorage implements FavouriteStorage {
 
     private final FilmStorage filmStorage;
 
-    private final Map<Film, List<User>> storage = new HashMap<>();
+    private final Map<Integer, List<Integer>> storage = new HashMap<>();
 
     @Override
-    public void addFavourite(Film film, User user) {
-        if (!storage.containsKey(film)) {
-            storage.put(film, new ArrayList<>());
+    public void addFavourite(int filmId, int userId) {
+        if (!storage.containsKey(filmId)) {
+            storage.put(filmId, new ArrayList<>());
         }
-        storage.get(film).add(user);
+        storage.get(filmId).add(userId);
     }
 
     @Override
-    public void removeFavoutite(Film film, User user) {
-        storage.get(film).remove(user);
+    public void removeFavoutite(int filmId, int userId) {
+        storage.get(filmId).remove(userId);
     }
 
     @Override

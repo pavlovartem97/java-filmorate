@@ -2,7 +2,7 @@
 Template repository for Filmorate project.
 
 ## ER diogramm:
-<image src="https://github.com/pavlovartem97/java-filmorate/blob/main/resources/er_digram.png" alt="Описание картинки">
+<image src="https://github.com/pavlovartem97/java-filmorate/blob/add-database/resources/er_diagram.png" alt="Описание картинки">
 
 ### SELECT examples:
 

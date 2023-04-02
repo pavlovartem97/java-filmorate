@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface FavouriteStorage {
 
-    void addFavourite(Film film, User user);
+    void addFavourite(int filmId, int userId);
 
-    void removeFavoutite(Film film, User user);
+    void removeFavoutite(int filmId, int userId);
 
     List<Film> getTopFilm(int count);
 }
