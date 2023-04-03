@@ -1,10 +1,12 @@
-package ru.yandex.practicum.filmorate.storage.mpa;
+package ru.yandex.practicum.filmorate.storage.DbImlp;
 
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,10 +27,11 @@ public class MpaDbStorage implements MpaStorage {
     @Override
     public Mpa getMpaById(int id) {
         String sql = "SELECT * FROM mpa WHERE mpa_id = ?";
-        return jdbcTemplate.query(sql, (rs, row) -> makeMpa(rs), id).stream().findAny()
-                .orElseThrow(() -> {
-                    throw new MpaNotFoundException("Mpa with Id " + id + " is not found");
-                });
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, row) -> makeMpa(rs), id);
+        } catch (DataAccessException ex) {
+            throw new MpaNotFoundException("Mpa with Id " + id + " is not found");
+        }
     }
 
     private Mpa makeMpa(ResultSet rs) throws SQLException {

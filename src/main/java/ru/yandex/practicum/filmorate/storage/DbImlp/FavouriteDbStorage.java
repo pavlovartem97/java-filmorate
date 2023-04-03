@@ -1,11 +1,11 @@
-package ru.yandex.practicum.filmorate.storage.favourite;
+package ru.yandex.practicum.filmorate.storage.DbImlp;
 
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.FilmExtractor;
+import ru.yandex.practicum.filmorate.storage.FavouriteStorage;
 
 import java.util.List;
 

@@ -11,8 +11,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.favourite.FavouriteDbStorage;
-import ru.yandex.practicum.filmorate.storage.film.FilmExtractor;
+import ru.yandex.practicum.filmorate.storage.DbImlp.FavouriteDbStorage;
+import ru.yandex.practicum.filmorate.storage.DbImlp.FilmExtractor;
 
 import java.util.List;
 

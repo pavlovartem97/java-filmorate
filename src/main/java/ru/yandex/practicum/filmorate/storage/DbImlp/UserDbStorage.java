@@ -1,13 +1,15 @@
-package ru.yandex.practicum.filmorate.storage.user;
+package ru.yandex.practicum.filmorate.storage.DbImlp;
 
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -53,10 +55,11 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User getUserById(int id) {
         String sql = "SELECT * FROM filmorate_user WHERE user_id = ?";
-        return jdbcTemplate.query(sql, userMapper, id).stream().findAny()
-                .orElseThrow(() -> {
-                    throw new UserNotFoundException("User with Id " + id + " not found");
-                });
+        try {
+            return jdbcTemplate.queryForObject(sql, userMapper, id);
+        } catch (DataAccessException ex) {
+            throw new UserNotFoundException("User with Id " + id + " not found");
+        }
     }
 
     private int insertUser(User user) {

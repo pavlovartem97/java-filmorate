@@ -17,8 +17,12 @@ public class Mpa {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Mpa mpa = (Mpa) o;
         return id.equals(mpa.id);
     }

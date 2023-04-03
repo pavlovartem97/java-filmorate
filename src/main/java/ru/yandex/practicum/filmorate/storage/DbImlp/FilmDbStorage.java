@@ -1,7 +1,8 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.storage.DbImlp;
 
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -9,11 +10,14 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.List;
 
 @Component("filmDbStorage")
 @Primary
@@ -29,27 +33,22 @@ public class FilmDbStorage implements FilmStorage {
         int id = insertFilm(film);
         film.setId(id);
 
-        for (Genre genre : film.getGenres()) {
-            String sql = "INSERT INTO film_genre (film_id, genre_id) VALUES ( ?, ? )";
-            jdbcTemplate.update(sql, film.getId(), genre.getId());
-        }
+        updateGenres(List.copyOf(film.getGenres()), film.getId());
     }
 
     @Override
     public void updateFilm(Film film) {
         getFilmById(film.getId());
         String sql = "UPDATE film " +
-                "SET name = ?,  description = ?, release_date = ?, duration = ?, mpa_id = ?" +
-                "WHERE film_id = ?";
+                     "SET name = ?,  description = ?, release_date = ?, duration = ?, mpa_id = ?" +
+                     "WHERE film_id = ?";
         jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(),
                 film.getDuration(), film.getMpa().getId(), film.getId());
 
         sql = "DELETE FROM film_genre WHERE film_id = ?";
         jdbcTemplate.update(sql, film.getId());
-        for (Genre genre : film.getGenres()) {
-            sql = "INSERT INTO film_genre (film_id, genre_id) VALUES ( ?, ? )";
-            jdbcTemplate.update(sql, film.getId(), genre.getId());
-        }
+
+        updateGenres(List.copyOf(film.getGenres()), film.getId());
     }
 
     @Override
@@ -98,5 +97,21 @@ public class FilmDbStorage implements FilmStorage {
                 }, keyHolder);
 
         return keyHolder.getKey().intValue();
+    }
+
+    private void updateGenres(List<Genre> genres, int filmId) {
+        String sql = "INSERT INTO film_genre (film_id, genre_id) VALUES ( ?, ? )";
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
+                preparedStatement.setInt(1, filmId);
+                preparedStatement.setInt(2, genres.get(i).getId());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return genres.size();
+            }
+        });
     }
 }

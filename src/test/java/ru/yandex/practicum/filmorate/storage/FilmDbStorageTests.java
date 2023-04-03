@@ -13,8 +13,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.film.FilmExtractor;
+import ru.yandex.practicum.filmorate.storage.DbImlp.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.DbImlp.FilmExtractor;
 
 import java.time.LocalDate;
 import java.util.List;

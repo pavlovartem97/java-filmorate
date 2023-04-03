@@ -2,11 +2,10 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.friend.FriendStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.FriendStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.UserValidator;
 
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ public class UserService {
 
     private final UserValidator userValidator;
 
-    @Qualifier("userDbStorage")
     private final UserStorage userStorage;
 
     private final FriendStorage friendStorage;

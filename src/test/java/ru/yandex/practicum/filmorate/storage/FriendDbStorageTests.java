@@ -11,8 +11,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.friend.FriendDbStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserMapper;
+import ru.yandex.practicum.filmorate.storage.DbImlp.FriendDbStorage;
+import ru.yandex.practicum.filmorate.storage.DbImlp.UserMapper;
 
 import java.util.List;
 

@@ -1,9 +1,10 @@
-package ru.yandex.practicum.filmorate.storage.favourite;
+package ru.yandex.practicum.filmorate.storage.InMemoryImpl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.FavouriteStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.ArrayList;
 import java.util.Comparator;
