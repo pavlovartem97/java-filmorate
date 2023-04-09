@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.DbImlp;
+package ru.yandex.practicum.filmorate.storage.databaseImlp;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;

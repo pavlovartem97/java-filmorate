@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.DbImlp;
+package ru.yandex.practicum.filmorate.storage.databaseImlp;
 
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -35,9 +35,7 @@ public class MpaDbStorage implements MpaStorage {
     }
 
     private Mpa makeMpa(ResultSet rs) throws SQLException {
-        Mpa mpa = new Mpa();
-        mpa.setId(rs.getInt("mpa_id"));
-        mpa.setName(rs.getString("mpa_name"));
+        Mpa mpa = new Mpa(rs.getInt("mpa_id"), rs.getString("mpa_name"));
         return mpa;
     }
 }

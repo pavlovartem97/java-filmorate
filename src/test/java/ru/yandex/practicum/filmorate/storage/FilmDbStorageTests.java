@@ -13,8 +13,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.DbImlp.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.DbImlp.FilmExtractor;
+import ru.yandex.practicum.filmorate.storage.databaseImlp.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.databaseImlp.FilmExtractor;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -42,7 +42,7 @@ public class FilmDbStorageTests {
 
     @Test
     public void getFilmByIdTest() {
-        Film film = filmDbStorage.getFilmById(1);
+        Film film = filmDbStorage.findFilmById(1).orElseThrow();
 
         Assertions.assertEquals(film.getId(), 1);
         Assertions.assertEquals(film.getName(), "name1");
@@ -62,7 +62,7 @@ public class FilmDbStorageTests {
 
     @Test
     public void getAllFilmsTest() {
-        List<Film> films = List.copyOf(filmDbStorage.getAllFilm());
+        List<Film> films = List.copyOf(filmDbStorage.findAll());
 
         Assertions.assertEquals(films.size(), 3);
         Assertions.assertEquals(films.get(0).getId(), 1);
@@ -99,10 +99,10 @@ public class FilmDbStorageTests {
 
     @Test
     public void deleteFilmsTest() {
-        Film film = filmDbStorage.getFilmById(1);
+        Film film = filmDbStorage.findFilmById(1).orElseThrow();
         filmDbStorage.deleteFilm(film);
 
-        List<Film> films = List.copyOf(filmDbStorage.getAllFilm());
+        List<Film> films = List.copyOf(filmDbStorage.findAll());
         Assertions.assertEquals(films.size(), 2);
         Assertions.assertEquals(films.get(0).getId(), 2);
         Assertions.assertEquals(films.get(1).getId(), 3);
@@ -110,16 +110,17 @@ public class FilmDbStorageTests {
 
     @Test
     public void updateFilmsTest() {
-        Film film = filmDbStorage.getFilmById(1);
+        Film film = filmDbStorage.findFilmById(1).orElseThrow();
 
         film.setName("new film");
-        Set<Genre> genres = film.getGenres();
-        genres.add(new Genre(6, null));
         film.setMpa(new Mpa(5, null));
 
+        Set<Genre> genres = film.getGenres();
+        genres.add(new Genre(6, null));
+
         filmDbStorage.updateFilm(film);
-        Film newFilm = filmDbStorage.getFilmById(1);
-        Assertions.assertEquals(film.getName(), newFilm.getName());
+        Film newFilm = filmDbStorage.findFilmById(1).orElseThrow();
+        Assertions.assertEquals(newFilm.getName(), "new film");
         Assertions.assertEquals(newFilm.getMpa().getId(), 5);
         Assertions.assertEquals(newFilm.getMpa().getName(), "NC-17");
         Assertions.assertEquals(newFilm.getGenres().size(), 3);
@@ -137,7 +138,7 @@ public class FilmDbStorageTests {
 
         filmDbStorage.addFilm(film);
 
-        Film newFilm = filmDbStorage.getFilmById(film.getId());
+        Film newFilm = filmDbStorage.findFilmById(film.getId()).orElseThrow();
         Assertions.assertEquals(newFilm.getId(), 4);
         Assertions.assertEquals(newFilm.getName(), "film4");
         Assertions.assertEquals(newFilm.getDuration(), 100);
@@ -146,5 +147,35 @@ public class FilmDbStorageTests {
         Assertions.assertEquals(newFilm.getMpa().getId(), 5);
         Assertions.assertEquals(newFilm.getMpa().getName(), "NC-17");
         Assertions.assertEquals(newFilm.getGenres().size(), 0);
+    }
+
+    @Test
+    public void getTopFilmsTest() {
+        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(2));
+
+        Assertions.assertEquals(films.size(), 2);
+        Assertions.assertEquals(films.get(0).getId(), 1);
+        Assertions.assertEquals(films.get(1).getId(), 3);
+    }
+
+    @Test
+    public void addFavouriteTest() {
+        filmDbStorage.addFavourite(2, 1);
+        filmDbStorage.addFavourite(2, 2);
+        filmDbStorage.addFavourite(2, 3);
+
+        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(1));
+        Assertions.assertEquals(films.size(), 1);
+        Assertions.assertEquals(films.get(0).getId(), 2);
+    }
+
+    @Test
+    public void removeFavouriteTest() {
+        filmDbStorage.removeFavoutite(1, 2);
+        filmDbStorage.removeFavoutite(1, 3);
+
+        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(1));
+        Assertions.assertEquals(films.size(), 1);
+        Assertions.assertEquals(films.get(0).getId(), 3);
     }
 }

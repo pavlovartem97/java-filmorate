@@ -11,8 +11,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.DbImlp.UserDbStorage;
-import ru.yandex.practicum.filmorate.storage.DbImlp.UserMapper;
+import ru.yandex.practicum.filmorate.storage.databaseImlp.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.databaseImlp.UserMapper;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -39,7 +39,7 @@ public class UserDbStorageTests {
 
     @Test
     public void findByIdTest() {
-        User user = userDbStorage.getUserById(1);
+        User user = userDbStorage.findUserById(1).orElseThrow();
 
         Assertions.assertEquals(user.getId(), 1);
         Assertions.assertEquals(user.getName(), "name1");
@@ -49,7 +49,7 @@ public class UserDbStorageTests {
 
     @Test
     public void findAllUsersTest() {
-        List<User> users = List.copyOf(userDbStorage.getAllUsers());
+        List<User> users = List.copyOf(userDbStorage.getAll());
 
         Assertions.assertEquals(users.get(0).getId(), 1);
         Assertions.assertEquals(users.get(0).getName(), "name1");
@@ -79,26 +79,64 @@ public class UserDbStorageTests {
 
     @Test
     public void updateUserTest() {
-        User user = userDbStorage.getUserById(1);
-        user.setName("new name");
-        user.setLogin("new login");
+        User user = userDbStorage.findUserById(1).orElseThrow();
+        User updatedUser = User.builder()
+                .id(user.getId())
+                .name("new name")
+                .login("new login")
+                .birthday(user.getBirthday())
+                .email(user.getEmail())
+                .build();
+        userDbStorage.updateUser(updatedUser);
 
-        userDbStorage.updateUser(user);
-
-        User newUser = userDbStorage.getUserById(1);
-        Assertions.assertEquals(user.getName(), newUser.getName());
-        Assertions.assertEquals(user.getLogin(), newUser.getLogin());
-        Assertions.assertEquals(user.getBirthday(), newUser.getBirthday());
-        Assertions.assertEquals(user.getEmail(), newUser.getEmail());
+        User newUser = userDbStorage.findUserById(1).orElseThrow();
+        Assertions.assertEquals(newUser.getName(), "new name");
+        Assertions.assertEquals(newUser.getLogin(), "new login");
+        Assertions.assertEquals(newUser.getBirthday(), user.getBirthday());
+        Assertions.assertEquals(newUser.getEmail(), user.getEmail());
     }
 
     @Test
     public void deleteUser() {
-        User user = userDbStorage.getUserById(2);
+        User user = userDbStorage.findUserById(2).orElseThrow();
         userDbStorage.deleteUser(user);
 
-        List<User> users = List.copyOf(userDbStorage.getAllUsers());
+        List<User> users = List.copyOf(userDbStorage.getAll());
         Assertions.assertEquals(users.size(), 2);
         Assertions.assertEquals(users.get(0).getId(), 1);
+    }
+
+    @Test
+    public void getFriendTest() {
+        List<User> users = List.copyOf(userDbStorage.findFriendsById(1));
+
+        Assertions.assertEquals(users.size(), 1);
+        Assertions.assertEquals(users.get(0).getId(), 2);
+    }
+
+    @Test
+    public void addFriendTest() {
+        userDbStorage.addFriend(1, 3);
+        List<User> users = List.copyOf(userDbStorage.findFriendsById(1));
+
+        Assertions.assertEquals(users.size(), 2);
+        Assertions.assertEquals(users.get(0).getId(), 2);
+        Assertions.assertEquals(users.get(1).getId(), 3);
+    }
+
+    @Test
+    public void removeFriendTest() {
+        userDbStorage.removeFriend(1, 2);
+        List<User> users = List.copyOf(userDbStorage.findFriendsById(1));
+
+        Assertions.assertEquals(users.size(), 0);
+    }
+
+    @Test
+    public void getCommonFriendsTest() {
+        List<User> users = List.copyOf(userDbStorage.getCommonFriends(1, 3));
+
+        Assertions.assertEquals(users.size(), 1);
+        Assertions.assertEquals(users.get(0).getId(), 2);
     }
 }

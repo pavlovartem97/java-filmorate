@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.DbImlp;
+package ru.yandex.practicum.filmorate.storage.databaseImlp;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;

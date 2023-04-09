@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.DbImlp;
+package ru.yandex.practicum.filmorate.storage.databaseImlp;
 
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -35,9 +35,7 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {
-        Genre genre = new Genre();
-        genre.setId(rs.getInt("genre_id"));
-        genre.setName(rs.getString("genre_name"));
+        Genre genre = new Genre(rs.getInt("genre_id"), rs.getString("genre_name"));
         return genre;
     }
 }
