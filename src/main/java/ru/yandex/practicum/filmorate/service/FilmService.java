@@ -1,20 +1,20 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Collection;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class FilmService {
 
     private final FilmStorage filmStorage;
@@ -23,44 +23,35 @@ public class FilmService {
 
     private final FilmValidator filmValidator;
 
-    @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage, FilmValidator filmValidator) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-        this.filmValidator = filmValidator;
-    }
-
     public void addLike(int filmId, int userId) {
-        Film film = filmStorage.getFilmById(filmId);
-        userStorage.getUserById(userId);
-        film.getLikeIds().add(userId);
+        checkFilmIdAndUserId(filmId, userId);
+        filmStorage.addFavourite(filmId, userId);
         log.info("User " + userId + " likes film " + filmId);
     }
 
     public void removeLike(int filmId, int userId) {
-        Film film = filmStorage.getFilmById(filmId);
-        userStorage.getUserById(userId);
-        film.getLikeIds().remove(userId);
+        checkFilmIdAndUserId(filmId, userId);
+        filmStorage.removeFavoutite(filmId, userId);
         log.info("User " + userId + " removes like from film " + filmId);
     }
 
-    public List<Film> topFilms(int count) {
-        List<Film> topFilms = filmStorage.getAllFilm().stream()
-                .sorted(Comparator.comparing(f -> f.getLikeIds().size(), Comparator.reverseOrder()))
-                .limit(count)
-                .collect(Collectors.toList());
+    public Collection<Film> topFilms(int count) {
+        Collection<Film> topFilms = filmStorage.findTopFilms(count);
         log.info("Get top films " + topFilms);
         return topFilms;
     }
 
-    public List<Film> getAllFilms() {
-        List<Film> films = new ArrayList<>(filmStorage.getAllFilm());
+    public Collection<Film> getAllFilms() {
+        Collection<Film> films = filmStorage.findAll();
         log.info("Film list getting " + films);
         return films;
     }
 
     public Film getFilmById(int filmId) {
-        Film film = filmStorage.getFilmById(filmId);
+        Film film = filmStorage.findFilmById(filmId)
+                .orElseThrow(() -> {
+                    throw new FilmNotFoundException("Film is not found: " + filmId);
+                });
         log.info("Get film by id " + film);
         return film;
     }
@@ -72,8 +63,24 @@ public class FilmService {
     }
 
     public void updateFilm(Film film) {
+        checkFilm(film.getId());
         filmValidator.validate(film);
         filmStorage.updateFilm(film);
         log.info("Film updating: " + film);
+    }
+
+    private void checkFilmIdAndUserId(int filmId, int userId) {
+        if (!filmStorage.contains(filmId)) {
+            throw new FilmNotFoundException("Film is not found: " + filmId);
+        }
+        if (!userStorage.contains(userId)) {
+            throw new UserNotFoundException("User is not found: " + userId);
+        }
+    }
+
+    private void checkFilm(int filmId) {
+        if (!filmStorage.contains(filmId)) {
+            throw new FilmNotFoundException("Film is not found: " + filmId);
+        }
     }
 }

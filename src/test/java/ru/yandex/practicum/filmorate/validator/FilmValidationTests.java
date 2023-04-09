@@ -1,12 +1,11 @@
-package ru.yandex.practicum.filmorate;
+package ru.yandex.practicum.filmorate.validator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.validator.FilmValidator;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
