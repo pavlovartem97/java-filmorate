@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.databaseImlp.MpaDbStorage;
+import ru.yandex.practicum.filmorate.storage.impl.MpaDbStorage;
 
 import java.util.List;
 

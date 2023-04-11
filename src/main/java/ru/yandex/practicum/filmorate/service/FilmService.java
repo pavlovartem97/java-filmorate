@@ -49,9 +49,7 @@ public class FilmService {
 
     public Film getFilmById(int filmId) {
         Film film = filmStorage.findFilmById(filmId)
-                .orElseThrow(() -> {
-                    throw new FilmNotFoundException("Film is not found: " + filmId);
-                });
+                .orElseThrow(() -> { throw new FilmNotFoundException("Film is not found: " + filmId); });
         log.info("Get film by id " + film);
         return film;
     }
@@ -63,8 +61,8 @@ public class FilmService {
     }
 
     public void updateFilm(Film film) {
-        checkFilm(film.getId());
         filmValidator.validate(film);
+        checkFilm(film.getId());
         filmStorage.updateFilm(film);
         log.info("Film updating: " + film);
     }

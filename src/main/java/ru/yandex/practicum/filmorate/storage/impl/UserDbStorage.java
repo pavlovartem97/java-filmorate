@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.databaseImlp;
+package ru.yandex.practicum.filmorate.storage.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 

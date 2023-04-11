@@ -11,8 +11,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.databaseImlp.UserDbStorage;
-import ru.yandex.practicum.filmorate.storage.databaseImlp.UserMapper;
+import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 
 import java.time.LocalDate;
 import java.util.List;

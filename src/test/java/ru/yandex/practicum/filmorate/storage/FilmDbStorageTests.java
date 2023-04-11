@@ -10,11 +10,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
+import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.databaseImlp.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.databaseImlp.FilmExtractor;
+import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,7 +27,9 @@ public class FilmDbStorageTests {
 
     private FilmDbStorage filmDbStorage;
 
-    private final FilmExtractor filmExtractor;
+    private final FilmMapper filmMapper;
+
+    private final GenreMapper genreMapper;
 
     @BeforeEach
     public void setUp() {
@@ -37,7 +40,7 @@ public class FilmDbStorageTests {
                 .setType(EmbeddedDatabaseType.H2)
                 .build();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
-        filmDbStorage = new FilmDbStorage(jdbcTemplate, filmExtractor);
+        filmDbStorage = new FilmDbStorage(jdbcTemplate, genreMapper, filmMapper);
     }
 
     @Test
