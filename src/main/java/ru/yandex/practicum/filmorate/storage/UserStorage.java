@@ -11,7 +11,7 @@ public interface UserStorage {
 
     void updateUser(User user);
 
-    void deleteUser(User user);
+    void deleteUser(int userId);
 
     Collection<User> getAll();
 

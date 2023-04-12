@@ -61,4 +61,9 @@ public class FilmController {
     public Collection<Film> getTopFilms(@RequestParam(defaultValue = "10") Integer count) {
         return filmService.topFilms(count);
     }
+
+    @DeleteMapping("/{filmId}")
+    public void deleteFilm(@PathVariable int filmId) {
+        filmService.deleteFilm(filmId);
+    }
 }

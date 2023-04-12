@@ -73,13 +73,19 @@ public class UserService {
         log.info("User updating: " + user);
     }
 
-    void checkUser(int userId) {
+    public void deleteUser(int userId) {
+        checkUser(userId);
+        userStorage.deleteUser(userId);
+        log.info("User deleted: " + userId);
+    }
+
+    private void checkUser(int userId) {
         if (!userStorage.contains(userId)) {
             throw new UserNotFoundException("User is not found: " + userId);
         }
     }
 
-    void checkUsers(int userId1, int userId2) {
+    private void checkUsers(int userId1, int userId2) {
         if (!userStorage.contains(userId1)) {
             throw new UserNotFoundException("User is not found: " + userId1);
         }

@@ -99,7 +99,7 @@ public class UserDbStorageTests {
     @Test
     public void deleteUser() {
         User user = userDbStorage.findUserById(2).orElseThrow();
-        userDbStorage.deleteUser(user);
+        userDbStorage.deleteUser(user.getId());
 
         List<User> users = List.copyOf(userDbStorage.getAll());
         Assertions.assertEquals(users.size(), 2);
