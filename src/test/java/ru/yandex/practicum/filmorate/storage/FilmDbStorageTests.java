@@ -103,7 +103,7 @@ public class FilmDbStorageTests {
     @Test
     public void deleteFilmsTest() {
         Film film = filmDbStorage.findFilmById(1).orElseThrow();
-        filmDbStorage.deleteFilm(film);
+        filmDbStorage.deleteFilm(film.getId());
 
         List<Film> films = List.copyOf(filmDbStorage.findAll());
         Assertions.assertEquals(films.size(), 2);

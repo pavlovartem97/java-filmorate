@@ -53,9 +53,9 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public void deleteFilm(Film film) {
+    public void deleteFilm(int filmId) {
         String sql = "DELETE FROM film WHERE film_id = ?";
-        jdbcTemplate.update(sql, film.getId());
+        jdbcTemplate.update(sql, filmId);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class FilmDbStorage implements FilmStorage {
                 "JOIN mpa m ON f.mpa_id = m.mpa_id ";
         Collection<Film> films = jdbcTemplate.query(sql, filmMapper);
 
-        for (Film film: films) {
+        for (Film film : films) {
             Collection<Genre> genres = getGenresByFilmId(film.getId());
             film.getGenres().addAll(genres);
         }
@@ -111,7 +111,7 @@ public class FilmDbStorage implements FilmStorage {
                 "JOIN mpa m ON fl.mpa_id = m.mpa_id ";
         Collection<Film> films = jdbcTemplate.query(sql, filmMapper, count);
 
-        for (Film film: films) {
+        for (Film film : films) {
             Collection<Genre> genres = getGenresByFilmId(film.getId());
             film.getGenres().addAll(genres);
         }
