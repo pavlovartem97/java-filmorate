@@ -24,4 +24,6 @@ public interface FilmStorage {
     Collection<Film> findTopFilms(int count);
 
     boolean contains(int filmId);
+
+    Collection<Film> getCommonFilms(Integer userId, Integer friendId);
 }
