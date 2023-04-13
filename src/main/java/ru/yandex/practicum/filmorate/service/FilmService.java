@@ -75,12 +75,12 @@ public class FilmService {
         log.info("Film removed: " + filmId);
     }
 
-    public Collection<Film> getCommonFilms(Integer userId, Integer friendId) {
+    public Collection<Film> getCommonFilms(int userId, int friendId) {
         checkUser(userId);
         checkUser(friendId);
 
         Collection<Film> commonFilms = filmStorage.getCommonFilms(userId, friendId);
-        log.info("Common films list getting " + commonFilms);
+        log.info("Got " + commonFilms.size() + " common films");
 
         return commonFilms;
     }
@@ -100,7 +100,7 @@ public class FilmService {
         }
     }
 
-    private void checkUser(Integer userId) {
+    private void checkUser(int userId) {
         if (!userStorage.contains(userId)) {
             throw new UserNotFoundException("User is not found: " + userId);
         }

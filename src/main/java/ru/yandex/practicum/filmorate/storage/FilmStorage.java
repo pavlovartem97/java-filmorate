@@ -25,5 +25,5 @@ public interface FilmStorage {
 
     boolean contains(int filmId);
 
-    Collection<Film> getCommonFilms(Integer userId, Integer friendId);
+    Collection<Film> getCommonFilms(int userId, int friendId);
 }
