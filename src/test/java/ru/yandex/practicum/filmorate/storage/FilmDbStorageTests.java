@@ -19,6 +19,7 @@ import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorage;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @SpringBootTest
@@ -154,7 +155,7 @@ public class FilmDbStorageTests {
 
     @Test
     public void getTopFilmsTest() {
-        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(2));
+        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(Map.of("count", 2)));
 
         Assertions.assertEquals(films.size(), 2);
         Assertions.assertEquals(films.get(0).getId(), 1);
@@ -167,7 +168,7 @@ public class FilmDbStorageTests {
         filmDbStorage.addFavourite(2, 2);
         filmDbStorage.addFavourite(2, 3);
 
-        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(1));
+        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(Map.of("count", 1)));
         Assertions.assertEquals(films.size(), 1);
         Assertions.assertEquals(films.get(0).getId(), 2);
     }
@@ -177,7 +178,7 @@ public class FilmDbStorageTests {
         filmDbStorage.removeFavoutite(1, 2);
         filmDbStorage.removeFavoutite(1, 3);
 
-        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(1));
+        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(Map.of("count", 1)));
         Assertions.assertEquals(films.size(), 1);
         Assertions.assertEquals(films.get(0).getId(), 3);
     }

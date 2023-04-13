@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
 
 import java.util.Collection;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -35,8 +36,8 @@ public class FilmService {
         log.info("User " + userId + " removes like from film " + filmId);
     }
 
-    public Collection<Film> topFilms(int count) {
-        Collection<Film> topFilms = filmStorage.findTopFilms(count);
+    public Collection<Film> topFilms(Map<String, Object> filters) {
+        Collection<Film> topFilms = filmStorage.findTopFilms(filters);
         log.info("Get top films " + topFilms);
         return topFilms;
     }
