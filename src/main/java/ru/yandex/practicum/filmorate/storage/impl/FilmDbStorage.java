@@ -152,7 +152,7 @@ public class FilmDbStorage implements FilmStorage {
                 "                           WHERE FAVOURITE.USER_ID = ?)";
 
         Collection<Film> films = jdbcTemplate.query(sql, filmMapper, id, id, id);
-        
+
         for (Film film : films) {
             Collection<Genre> genres = getGenresByFilmId(film.getId());
             film.getGenres().addAll(genres);
