@@ -131,6 +131,37 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public Collection<Film> getRecommendations(int id) {
+        String sql = "SELECT * " +
+                "FROM FILM " +
+                "JOIN MPA m ON FILM.MPA_ID = m.MPA_ID " +
+                "WHERE FILM.FILM_ID IN (SELECT FAVOURITE.FILM_ID " +
+                "                       FROM FAVOURITE " +
+                "                       WHERE FAVOURITE.USER_ID = (SELECT FAVOURITE.USER_ID " +
+                "                                                  FROM FAVOURITE " +
+                "                                                           JOIN (SELECT FAVOURITE.FILM_ID " +
+                "                                                                 FROM FAVOURITE " +
+                "                                                                 WHERE FAVOURITE.USER_ID = ?) uf " +
+                "                                                                ON uf.FILM_ID = FAVOURITE.FILM_ID " +
+                "                                                  WHERE FAVOURITE.USER_ID != ? " +
+                "                                                  GROUP BY FAVOURITE.USER_ID " +
+                "                                                  ORDER BY COUNT(FAVOURITE.FILM_ID) DESC " +
+                "                                                  LIMIT 1)) " +
+                "  AND FILM.FILM_ID NOT IN (SELECT FAVOURITE.FILM_ID " +
+                "                           FROM FAVOURITE " +
+                "                           WHERE FAVOURITE.USER_ID = ?)";
+
+        Collection<Film> films = jdbcTemplate.query(sql, filmMapper, id, id, id);
+
+        for (Film film : films) {
+            Collection<Genre> genres = getGenresByFilmId(film.getId());
+            film.getGenres().addAll(genres);
+        }
+
+        return films;
+    }
+
+    @Override
     public Collection<Film> getCommonFilms(int userId, int friendId) {
         String sql = "SELECT * " +
                 "FROM ( " +
