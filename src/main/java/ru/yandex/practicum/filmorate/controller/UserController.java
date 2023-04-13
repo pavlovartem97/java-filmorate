@@ -25,8 +25,6 @@ import java.util.Collection;
 public class UserController {
     private final UserService userService;
 
-    private final FilmService filmService;
-
     @GetMapping
     public Collection<User> getAllUsers() {
         return userService.getAllUsers();
@@ -76,6 +74,6 @@ public class UserController {
 
     @GetMapping("/{id}/recommendations")
     public Collection<Film> getRecommendations(@PathVariable int id) {
-        return filmService.getRecommendations(id);
+        return userService.getRecommendations(id);
     }
 }
