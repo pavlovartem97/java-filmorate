@@ -192,7 +192,7 @@ public class FilmDbStorageTests {
         Assertions.assertEquals(1, films.size());
         Assertions.assertEquals(3, films.get(0).getId());
     }
-    
+
     @Test
     void getCommonFilmsTest() {
         filmDbStorage.addFavourite(2, 1);
