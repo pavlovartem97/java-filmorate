@@ -16,6 +16,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -62,10 +63,11 @@ public class FilmController {
     public Collection<Film> getTopFilms(@RequestParam(defaultValue = "10") Integer count,
                                         @RequestParam(required = false) Integer genreId,
                                         @RequestParam(required = false) Integer year) {
-        Map<String, Object> filters = Map.of(
-                "count", count,
-                "genreId", genreId,
-                "year", year);
+        Map<String, Object> filters = new HashMap<>();
+
+        filters.put("count", count);
+        if (genreId != null) filters.put("genreId", genreId);
+        if (year != null) filters.put("year", year);
 
         return filmService.topFilms(filters);
     }
