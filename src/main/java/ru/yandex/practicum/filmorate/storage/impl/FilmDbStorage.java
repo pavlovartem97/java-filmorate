@@ -131,7 +131,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getRecommendations(Integer id) {
+    public Collection<Film> getRecommendations(int id) {
         String sql = "SELECT * " +
                 "FROM FILM " +
                 "JOIN MPA m ON FILM.MPA_ID = m.MPA_ID " +

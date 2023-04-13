@@ -75,10 +75,10 @@ public class FilmService {
         log.info("Film removed: " + filmId);
     }
 
-    public Collection<Film> getRecommendations(Integer id) {
+    public Collection<Film> getRecommendations(int id) {
         checkUser(id);
         Collection<Film> recommendationFilms = filmStorage.getRecommendations(id);
-        log.info("Film list getting " + recommendationFilms);
+        log.info("Got " + recommendationFilms.size() + " recommended films");
         return recommendationFilms;
     }
 
