@@ -130,6 +130,34 @@ public class FilmDbStorage implements FilmStorage {
         return true;
     }
 
+    @Override
+    public Collection<Film> getCommonFilms(int userId, int friendId) {
+        String sql = "SELECT * " +
+                "FROM ( " +
+                "    SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, COUNT(fv.user_id) rating " +
+                "    FROM film f " +
+                "       LEFT JOIN favourite fv ON f.film_id = fv.film_id " +
+                "    WHERE f.film_id IN (SELECT favourite.film_id " +
+                "                          FROM favourite " +
+                "                          WHERE favourite.user_id = ? " +
+                "                            AND favourite.film_id IN (SELECT favourite.film_id " +
+                "                                                      FROM favourite " +
+                "                                                      WHERE favourite.user_id = ?)) " +
+                "    GROUP BY f.film_id " +
+                "    ORDER BY rating desc, f.film_id " +
+                ") fl " +
+                "JOIN mpa m ON fl.mpa_id = m.mpa_id ";
+
+        Collection<Film> films = jdbcTemplate.query(sql, filmMapper, userId, friendId);
+
+        for (Film film : films) {
+            Collection<Genre> genres = getGenresByFilmId(film.getId());
+            film.getGenres().addAll(genres);
+        }
+
+        return films;
+    }
+
     private int insertFilm(Film film) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO film (name, description, release_date, duration, mpa_id) " +
