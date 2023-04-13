@@ -12,6 +12,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -137,6 +138,7 @@ public class FilmDbStorageTests {
                 .mpa(new Mpa(5, null))
                 .description("description4")
                 .releaseDate(LocalDate.parse("2022-10-01"))
+                .director(new Director(1, null))
                 .build();
 
         filmDbStorage.addFilm(film);
@@ -180,5 +182,35 @@ public class FilmDbStorageTests {
         List<Film> films = List.copyOf(filmDbStorage.findTopFilms(1));
         Assertions.assertEquals(films.size(), 1);
         Assertions.assertEquals(films.get(0).getId(), 3);
+    }
+
+    @Test
+    public void correctEmptyFilmsOfDirector() {
+        List<Film> films = List.copyOf(filmDbStorage.getFilmsOfDirector(1, "order"));
+        Assertions.assertEquals(films.size(), 0);
+    }
+
+    @Test
+    public void correctFilmsOfDirectorDefaultOrder() {
+        List<Film> films = List.copyOf(filmDbStorage.getFilmsOfDirector(2, "order"));
+        Assertions.assertEquals(films.get(0).getId(), 1);
+        Assertions.assertEquals(films.get(1).getId(), 2);
+        Assertions.assertEquals(films.get(2).getId(), 3);
+    }
+
+    @Test
+    public void correctFilmsOfDirectorLikesOrder() {
+        List<Film> films = List.copyOf(filmDbStorage.getFilmsOfDirector(2, "likes"));
+        Assertions.assertEquals(films.get(0).getId(), 1);
+        Assertions.assertEquals(films.get(1).getId(), 3);
+        Assertions.assertEquals(films.get(2).getId(), 2);
+    }
+
+    @Test
+    public void correctFilmsOfDirectorYearOrder() {
+        List<Film> films = List.copyOf(filmDbStorage.getFilmsOfDirector(2, "year"));
+        Assertions.assertEquals(films.get(0).getId(), 3);
+        Assertions.assertEquals(films.get(1).getId(), 2);
+        Assertions.assertEquals(films.get(2).getId(), 1);
     }
 }

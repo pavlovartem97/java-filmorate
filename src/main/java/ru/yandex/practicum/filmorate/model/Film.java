@@ -38,4 +38,6 @@ public class Film {
     private final Set<Genre> genres = new TreeSet<>(Comparator.comparing(f -> f.getId()));
 
     private Mpa mpa;
+
+    private Director director;
 }

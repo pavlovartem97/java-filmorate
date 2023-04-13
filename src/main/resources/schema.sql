@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS FILMORATE_USER CASCADE;
 DROP TABLE IF EXISTS FRIEND CASCADE;
 DROP TABLE IF EXISTS GENRE CASCADE;
 DROP TABLE IF EXISTS MPA CASCADE;
+DROP TABLE IF EXISTS DIRECTOR CASCADE;
 
 create table if not exists GENRE
 (
@@ -22,6 +23,14 @@ create table if not exists MPA
         primary key (MPA_ID)
 );
 
+create table if not exists DIRECTOR
+(
+    DIRECTOR_ID    INTEGER not null auto_increment,
+    DIRECTOR_NAME      CHARACTER LARGE OBJECT,
+    constraint "DIRECTOR_pk"
+        primary key (DIRECTOR_ID)
+);
+
 create table if not exists FILM
 (
     FILM_ID      INTEGER not null auto_increment,
@@ -30,10 +39,13 @@ create table if not exists FILM
     RELEASE_DATE DATE                   not null,
     DURATION     INTEGER                not null,
     MPA_ID    INTEGER                   not null,
+    DIRECTOR_ID  INTEGER                not null,
     constraint "FILM_pk"
         primary key (FILM_ID),
     constraint "FILM_RATING_RATING_ID_fk"
-        foreign key (MPA_ID) references MPA
+        foreign key (MPA_ID) references MPA,
+    constraint "FILM_DIRECTOR_DIRECTOR_ID_fk"
+        foreign key (DIRECTOR_ID) references DIRECTOR
 );
 
 create table if not exists FILM_GENRE

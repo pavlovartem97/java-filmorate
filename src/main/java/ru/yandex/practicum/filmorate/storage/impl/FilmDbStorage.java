@@ -41,10 +41,10 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public void updateFilm(Film film) {
         String sql = "UPDATE film " +
-                "SET name = ?,  description = ?, release_date = ?, duration = ?, mpa_id = ?" +
+                "SET name = ?,  description = ?, release_date = ?, duration = ?, mpa_id = ?, director_id = ? " +
                 "WHERE film_id = ?";
         jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(),
-                film.getDuration(), film.getMpa().getId(), film.getId());
+                film.getDuration(), film.getMpa().getId(), film.getDirector().getId(), film.getId());
 
         sql = "DELETE FROM film_genre WHERE film_id = ?";
         jdbcTemplate.update(sql, film.getId());
@@ -61,7 +61,8 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Collection<Film> findAll() {
         String sql = "SELECT * FROM film f " +
-                "JOIN mpa m ON f.mpa_id = m.mpa_id ";
+                "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "JOIN director d ON f.director_id = d.director_id";
         Collection<Film> films = jdbcTemplate.query(sql, filmMapper);
 
         for (Film film : films) {
@@ -76,6 +77,7 @@ public class FilmDbStorage implements FilmStorage {
     public Optional<Film> findFilmById(int id) {
         String sql = "SELECT * FROM film f " +
                 "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "JOIN director d ON f.director_id = d.director_id " +
                 "WHERE f.FILM_ID = ?";
         try {
             Film film = jdbcTemplate.queryForObject(sql, filmMapper, id);
@@ -102,13 +104,14 @@ public class FilmDbStorage implements FilmStorage {
     public Collection<Film> findTopFilms(int count) {
         String sql = "SELECT * " +
                 "FROM ( " +
-                "    SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, COUNT(fv.user_id) rating " +
+                "    SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, f.director_id, COUNT(fv.user_id) rating " +
                 "    FROM film f " +
                 "    LEFT JOIN favourite fv ON f.film_id = fv.film_id " +
                 "    GROUP BY f.film_id " +
                 "    ORDER BY rating desc, f.film_id " +
                 "    LIMIT ?) fl " +
-                "JOIN mpa m ON fl.mpa_id = m.mpa_id ";
+                "JOIN mpa m ON fl.mpa_id = m.mpa_id " +
+                "JOIN director d ON fl.director_id = d.director_id ";
         Collection<Film> films = jdbcTemplate.query(sql, filmMapper, count);
 
         for (Film film : films) {
@@ -130,10 +133,46 @@ public class FilmDbStorage implements FilmStorage {
         return true;
     }
 
+    @Override
+    public Collection<Film> getFilmsOfDirector(int directorID, String sortBy) {
+        String sql = "SELECT * FROM film f " +
+                "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "JOIN director d ON f.director_id = d.director_id " +
+                "WHERE f.director_id = ? " +
+                "ORDER BY f.film_id";
+        if (sortBy.equals("year")) {
+            sql = "SELECT * FROM film f " +
+                    "JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                    "JOIN director d ON f.director_id = d.director_id " +
+                    "WHERE f.director_id = ? " +
+                    "ORDER BY f.release_date DESC";
+        }
+        if (sortBy.equals("likes")) {
+            sql = "SELECT * " +
+                    "FROM ( " +
+                    "    SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, f.director_id, COUNT(fv.user_id) rating " +
+                    "    FROM film f " +
+                    "    LEFT JOIN favourite fv ON f.film_id = fv.film_id " +
+                    "    GROUP BY f.film_id " +
+                    "    ORDER BY rating desc, f.film_id) fl " +
+                    "JOIN mpa m ON fl.mpa_id = m.mpa_id " +
+                    "JOIN director d ON fl.director_id = d.director_id " +
+                    "WHERE fl.director_id = ?";
+        }
+        Collection<Film> films = jdbcTemplate.query(sql, filmMapper, directorID);
+
+        for (Film film : films) {
+            Collection<Genre> genres = getGenresByFilmId(film.getId());
+            film.getGenres().addAll(genres);
+        }
+
+        return films;
+    }
+
     private int insertFilm(Film film) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "INSERT INTO film (name, description, release_date, duration, mpa_id) " +
-                "VALUES ( ?, ?, ?, ?, ? )";
+        String sql = "INSERT INTO film (name, description, release_date, duration, mpa_id, director_id) " +
+                "VALUES ( ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(
                 connection -> {
@@ -143,6 +182,7 @@ public class FilmDbStorage implements FilmStorage {
                     preparedStatement.setDate(3, Date.valueOf(film.getReleaseDate()));
                     preparedStatement.setInt(4, film.getDuration());
                     preparedStatement.setInt(5, film.getMpa().getId());
+                    preparedStatement.setInt(6, film.getDirector().getId());
                     return preparedStatement;
                 }, keyHolder);
 
