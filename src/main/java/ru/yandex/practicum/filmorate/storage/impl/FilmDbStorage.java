@@ -142,8 +142,8 @@ public class FilmDbStorage implements FilmStorage {
             isFirst = false;
 
             filterString
-                    .append("f.genreId = ")
-                    .append(filters.get("genreId"));
+                    .append(filters.get("genreId"))
+                    .append(" IN (SELECT genre_id FROM film_genre WHERE film_genre.film_id = f.film_id) ");
         }
 
         if (filters.get("year") != null) {
@@ -154,7 +154,7 @@ public class FilmDbStorage implements FilmStorage {
             }
 
             filterString
-                    .append("f.EXTRACT(YEAR FROM release_date::date) = ")
+                    .append("EXTRACT(YEAR FROM f.release_date::date) = ")
                     .append(filters.get("year"));
         }
 

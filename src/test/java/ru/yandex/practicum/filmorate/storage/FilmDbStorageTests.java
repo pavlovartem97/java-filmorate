@@ -182,4 +182,34 @@ public class FilmDbStorageTests {
         Assertions.assertEquals(films.size(), 1);
         Assertions.assertEquals(films.get(0).getId(), 3);
     }
+
+    @Test
+    void addFilteredFavouriteTest() {
+        Film film = Film.builder()
+                .name("film name")
+                .description("film_description")
+                .releaseDate(LocalDate.parse("2000-01-01"))
+                .duration(60)
+                .mpa(new Mpa(5, null))
+                .build();
+
+        filmDbStorage.addFilm(film);
+        Set<Genre> genres = film.getGenres();
+        genres.add(new Genre(1, null));
+        filmDbStorage.updateFilm(film);
+
+        filmDbStorage.addFavourite(4, 1);
+        filmDbStorage.addFavourite(4, 2);
+        filmDbStorage.addFavourite(4, 3);
+
+        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(
+                Map.of("count", 5,
+                        "genreId", 1,
+                        "year", 2000)
+        ));
+
+        Assertions.assertEquals(2, films.size());
+        Assertions.assertEquals(4, films.get(0).getId());
+        Assertions.assertEquals(1, films.get(1).getId());
+    }
 }

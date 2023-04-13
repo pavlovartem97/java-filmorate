@@ -38,7 +38,7 @@ public class FilmService {
 
     public Collection<Film> topFilms(Map<String, Object> filters) {
         Collection<Film> topFilms = filmStorage.findTopFilms(filters);
-        log.info("Get top films " + topFilms);
+        log.info("Got top " + topFilms.size() + " films");
         return topFilms;
     }
 
