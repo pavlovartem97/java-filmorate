@@ -76,6 +76,16 @@ public class FilmService {
         log.info("Film removed: " + filmId);
     }
 
+    public Collection<Film> getCommonFilms(int userId, int friendId) {
+        checkUser(userId);
+        checkUser(friendId);
+
+        Collection<Film> commonFilms = filmStorage.getCommonFilms(userId, friendId);
+        log.info("Got " + commonFilms.size() + " common films");
+
+        return commonFilms;
+    }
+
     private void checkFilmIdAndUserId(int filmId, int userId) {
         if (!filmStorage.contains(filmId)) {
             throw new FilmNotFoundException("Film is not found: " + filmId);
@@ -88,6 +98,12 @@ public class FilmService {
     private void checkFilm(int filmId) {
         if (!filmStorage.contains(filmId)) {
             throw new FilmNotFoundException("Film is not found: " + filmId);
+        }
+    }
+
+    private void checkUser(int userId) {
+        if (!userStorage.contains(userId)) {
+            throw new UserNotFoundException("User is not found: " + userId);
         }
     }
 }

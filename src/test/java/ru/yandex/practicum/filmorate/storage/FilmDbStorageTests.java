@@ -212,4 +212,27 @@ public class FilmDbStorageTests {
         Assertions.assertEquals(4, films.get(0).getId());
         Assertions.assertEquals(1, films.get(1).getId());
     }
+
+    @Test
+    void getRecommendationsTest() {
+        filmDbStorage.addFavourite(1, 1);
+        filmDbStorage.addFavourite(2, 2);
+        filmDbStorage.addFavourite(2, 1);
+
+        List<Film> films = List.copyOf(filmDbStorage.getRecommendations(2));
+        Assertions.assertEquals(1, films.size());
+        Assertions.assertEquals(3, films.get(0).getId());
+    }
+
+    @Test
+    void getCommonFilmsTest() {
+        filmDbStorage.addFavourite(2, 1);
+        filmDbStorage.addFavourite(2, 2);
+        filmDbStorage.addFavourite(2, 3);
+
+        List<Film> films = List.copyOf(filmDbStorage.getCommonFilms(2, 3));
+        Assertions.assertEquals(2, films.size());
+        Assertions.assertEquals(2, films.get(0).getId());
+        Assertions.assertEquals(1, films.get(1).getId());
+    }
 }
