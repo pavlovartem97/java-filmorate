@@ -137,7 +137,7 @@ public class FilmDbStorage implements FilmStorage {
         StringBuilder filterString = new StringBuilder();
         boolean isFirst = true;
 
-        if (filters.get("genreId") != null) {
+        if (filters.containsKey("genreId")) {
             filterString.append("WHERE ");
             isFirst = false;
 
@@ -146,7 +146,7 @@ public class FilmDbStorage implements FilmStorage {
                     .append(" IN (SELECT genre_id FROM film_genre WHERE film_genre.film_id = f.film_id) ");
         }
 
-        if (filters.get("year") != null) {
+        if (filters.containsKey("year")) {
             if (isFirst) {
                 filterString.append("WHERE ");
             } else {
