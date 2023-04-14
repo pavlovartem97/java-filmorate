@@ -137,7 +137,6 @@ public class FilmDbStorage implements FilmStorage {
         return true;
     }
 
-    //Переделать из за новой логики режиссеров!
     @Override
     public Collection<Film> getFilmsOfDirector(int directorID, String sortBy) {
         String sql = "SELECT * FROM film_director fd " +
