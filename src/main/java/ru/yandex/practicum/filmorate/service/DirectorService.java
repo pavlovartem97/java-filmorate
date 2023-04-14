@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 
-import java.util.List;
+import java.util.Collection;
 
 @Service
 @Slf4j
@@ -15,8 +15,8 @@ import java.util.List;
 public class DirectorService {
     private final DirectorStorage directorStorage;
 
-    public List<Director> getAllDirectors() {
-        List<Director> directors = directorStorage.getAllDirectors();
+    public Collection<Director> getAllDirectors() {
+        Collection<Director> directors = directorStorage.getAllDirectors();
         log.info("Size of all directors list: {}", directors.size());
         return directors;
     }

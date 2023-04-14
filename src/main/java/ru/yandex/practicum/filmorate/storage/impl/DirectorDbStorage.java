@@ -12,7 +12,7 @@ import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 @Component
@@ -22,7 +22,7 @@ public class DirectorDbStorage implements DirectorStorage {
     private final DirectorMapper directorMapper;
 
     @Override
-    public List<Director> getAllDirectors() {
+    public Collection<Director> getAllDirectors() {
         String sql = "SELECT * FROM director";
         return jdbcTemplate.query(sql, directorMapper);
     }

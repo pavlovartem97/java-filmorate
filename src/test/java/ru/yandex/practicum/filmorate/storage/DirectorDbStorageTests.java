@@ -43,7 +43,7 @@ public class DirectorDbStorageTests {
 
     @Test
     public void correctGetAllDirectors() {
-        List<Director> directors = dbStorage.getAllDirectors();
+        List<Director> directors = List.copyOf(dbStorage.getAllDirectors());
 
         Assertions.assertEquals(directors.get(0).getId(), 1);
         Assertions.assertEquals(directors.get(0).getName(), "First Director");
@@ -71,7 +71,7 @@ public class DirectorDbStorageTests {
     @Test
     public void correctDirectorRemoving() {
         dbStorage.deleteDirector(1);
-        List<Director> directors = dbStorage.getAllDirectors();
+        List<Director> directors = List.copyOf(dbStorage.getAllDirectors());
         Assertions.assertEquals(directors.size(), 1);
         Assertions.assertEquals(directors.get(0).getId(), 2);
         Assertions.assertEquals(directors.get(0).getName(), "Second Director");
