@@ -39,5 +39,5 @@ public class Film {
 
     private Mpa mpa;
 
-    private Director director;
+    private final Set<Director> directors = new TreeSet<>(Comparator.comparing(f -> f.getId()));
 }
