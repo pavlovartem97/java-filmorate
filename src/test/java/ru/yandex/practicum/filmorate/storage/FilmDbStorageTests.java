@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import ru.yandex.practicum.filmorate.mapper.DirectorMapper;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -31,6 +32,8 @@ public class FilmDbStorageTests {
 
     private final GenreMapper genreMapper;
 
+    private final DirectorMapper directorMapper;
+
     @BeforeEach
     public void setUp() {
         EmbeddedDatabase embeddedDatabase = new EmbeddedDatabaseBuilder()
@@ -40,7 +43,7 @@ public class FilmDbStorageTests {
                 .setType(EmbeddedDatabaseType.H2)
                 .build();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
-        filmDbStorage = new FilmDbStorage(jdbcTemplate, genreMapper, filmMapper);
+        filmDbStorage = new FilmDbStorage(jdbcTemplate, genreMapper, filmMapper, directorMapper);
     }
 
     @Test
@@ -180,6 +183,36 @@ public class FilmDbStorageTests {
         List<Film> films = List.copyOf(filmDbStorage.findTopFilms(1));
         Assertions.assertEquals(films.size(), 1);
         Assertions.assertEquals(films.get(0).getId(), 3);
+    }
+
+    @Test
+    public void correctEmptyFilmsOfDirector() {
+        List<Film> films = List.copyOf(filmDbStorage.getFilmsOfDirector(1, "order"));
+        Assertions.assertEquals(films.size(), 0);
+    }
+
+    @Test
+    public void correctFilmsOfDirectorDefaultOrder() {
+        List<Film> films = List.copyOf(filmDbStorage.getFilmsOfDirector(2, "order"));
+        Assertions.assertEquals(films.get(0).getId(), 1);
+        Assertions.assertEquals(films.get(1).getId(), 2);
+        Assertions.assertEquals(films.get(2).getId(), 3);
+    }
+
+    @Test
+    public void correctFilmsOfDirectorLikesOrder() {
+        List<Film> films = List.copyOf(filmDbStorage.getFilmsOfDirector(2, "likes"));
+        Assertions.assertEquals(films.get(0).getId(), 1);
+        Assertions.assertEquals(films.get(1).getId(), 3);
+        Assertions.assertEquals(films.get(2).getId(), 2);
+    }
+
+    @Test
+    public void correctFilmsOfDirectorYearOrder() {
+        List<Film> films = List.copyOf(filmDbStorage.getFilmsOfDirector(2, "year"));
+        Assertions.assertEquals(films.get(0).getId(), 1);
+        Assertions.assertEquals(films.get(1).getId(), 2);
+        Assertions.assertEquals(films.get(2).getId(), 3);
     }
 
     @Test
