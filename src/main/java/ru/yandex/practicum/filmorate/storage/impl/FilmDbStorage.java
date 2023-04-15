@@ -175,7 +175,7 @@ public class FilmDbStorage implements FilmStorage {
     private int insertFilm(Film film) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO film (name, description, release_date, duration, mpa_id) " +
-                "VALUES ( ?, ?, ?, ?, ?)";
+                "VALUES ( ?, ?, ?, ?, ? )";
 
         jdbcTemplate.update(
                 connection -> {

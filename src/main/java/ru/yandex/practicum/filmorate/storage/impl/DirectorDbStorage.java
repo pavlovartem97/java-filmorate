@@ -42,10 +42,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public void deleteDirector(int directorID) {
-        String sql = "DELETE FROM film_director WHERE director_id = ?";
-        jdbcTemplate.update(sql, directorID);
-
-        sql = "DELETE FROM director WHERE director_id = ?";
+        String sql = "DELETE FROM director WHERE director_id = ?";
         jdbcTemplate.update(sql, directorID);
     }
 
@@ -63,7 +60,7 @@ public class DirectorDbStorage implements DirectorStorage {
     public boolean contains(int directorID) {
         try {
             String sql = "SELECT director_id FROM director WHERE director_id = ?";
-            jdbcTemplate.queryForObject(sql, Long.class, directorID);
+            jdbcTemplate.queryForObject(sql, Integer.class, directorID);
         } catch (EmptyResultDataAccessException exception) {
             return false;
         }
