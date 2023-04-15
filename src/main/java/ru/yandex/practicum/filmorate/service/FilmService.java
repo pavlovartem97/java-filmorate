@@ -79,11 +79,22 @@ public class FilmService {
         log.info("Film removed: " + filmId);
     }
 
+
     public Collection<Film> getFilmsOfDirector(int directorID, String sortBy) {
         checkDirector(directorID);
         Collection<Film> films = filmStorage.getFilmsOfDirector(directorID, sortBy);
         log.info("Get list of director films, his size {}", films.size());
         return films;
+    }
+
+    public Collection<Film> getCommonFilms(int userId, int friendId) {
+        checkUser(userId);
+        checkUser(friendId);
+
+        Collection<Film> commonFilms = filmStorage.getCommonFilms(userId, friendId);
+        log.info("Got " + commonFilms.size() + " common films");
+
+        return commonFilms;
     }
 
     private void checkFilmIdAndUserId(int filmId, int userId) {
@@ -104,6 +115,12 @@ public class FilmService {
     private void checkDirector(int directorId) {
         if (!directorStorage.contains(directorId)) {
             throw new DirectorNotFoundException("Director with ID " + directorId + " not found");
+        }
+    }
+
+    private void checkUser(int userId) {
+        if (!userStorage.contains(userId)) {
+            throw new UserNotFoundException("User is not found: " + userId);
         }
     }
 }
