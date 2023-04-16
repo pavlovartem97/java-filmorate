@@ -6,13 +6,16 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -95,6 +98,64 @@ public class FilmService {
         log.info("Got " + commonFilms.size() + " common films");
 
         return commonFilms;
+    }
+
+    public Collection<Film> searchFilms(String query, List<String> by) {
+        if (by.size() == 2) {
+            return searchFilmsByTitleAndDirector(query);
+        } else if (by.contains("director")) {
+            return searchFilmsByDirector(query);
+        } else if (by.contains("film")) {
+            return searchFilmsByTitle(query);
+        } else {
+            throw new RuntimeException("Query not supported");
+        }
+    }
+
+    private Collection<Film> searchFilmsByDirector(String query) {
+        List<Film> preliminary = new ArrayList<>(filmStorage.searchFilms());
+        List<Film> foundFilms = new ArrayList<>();
+        for (Film film : preliminary) {
+            if (confirmDirectorNamesAreQueried(film, query)) {
+                foundFilms.add(film);
+            }
+        }
+        return foundFilms;
+    }
+
+    private Collection<Film> searchFilmsByTitle(String query) {
+        List<Film> preliminary = new ArrayList<>(filmStorage.searchFilms());
+        List<Film> foundFilms = new ArrayList<>();
+        for (Film film : preliminary) {
+            if (film.getName().equals(query)) {
+                foundFilms.add(film);
+            }
+        }
+        return foundFilms;
+    }
+
+    private Collection<Film> searchFilmsByTitleAndDirector(String query) {
+        List<Film> preliminary = new ArrayList<>(filmStorage.searchFilms());
+        List<Film> foundFilms = new ArrayList<>();
+        for (Film film : preliminary) {
+            if (film.getName().equals(query)) {
+                foundFilms.add(film);
+            } else {
+                if (confirmDirectorNamesAreQueried(film, query)) {
+                    foundFilms.add(film);
+                }
+            }
+        }
+        return foundFilms;
+    }
+
+    private boolean confirmDirectorNamesAreQueried(Film film, String query) {
+        for (Director director : film.getDirectors()) {
+            if (director.getName().toLowerCase().contains(query)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void checkFilmIdAndUserId(int filmId, int userId) {

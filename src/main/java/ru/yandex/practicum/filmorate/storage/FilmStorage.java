@@ -23,6 +23,8 @@ public interface FilmStorage {
 
     Collection<Film> findTopFilms(int count);
 
+    Collection<Film> searchFilms();
+
     boolean contains(int filmId);
 
     Collection<Film> getFilmsOfDirector(int directorID, String sortBy);

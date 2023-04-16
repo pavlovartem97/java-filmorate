@@ -122,7 +122,25 @@ public class FilmDbStorage implements FilmStorage {
         for (Film film : films) {
             fillGenreAndDirector(film);
         }
+        return films;
+    }
 
+    @Override
+    public Collection<Film> searchFilms() {
+        String sql = "SELECT * " +
+                "FROM ( " +
+                "    SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, COUNT(fv.user_id) rating " +
+                "    FROM film f " +
+                "    LEFT JOIN favourite fv ON f.film_id = fv.film_id " +
+                "    GROUP BY f.film_id " +
+                "    ORDER BY rating desc, f.film_id " +
+                "    ) fl " +
+                "JOIN mpa m ON fl.mpa_id = m.mpa_id ";
+        Collection<Film> films = jdbcTemplate.query(sql, filmMapper);
+
+        for (Film film : films) {
+            fillGenreAndDirector(film);
+        }
         return films;
     }
 
