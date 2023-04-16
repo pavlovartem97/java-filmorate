@@ -140,34 +140,6 @@ public class FilmDbStorage implements FilmStorage {
         return true;
     }
 
-    private String generateFilterString(Map<String, Object> filters) {
-        StringBuilder filterString = new StringBuilder();
-        boolean isFirst = true;
-
-        if (filters.containsKey("genreId")) {
-            filterString.append("WHERE ");
-            isFirst = false;
-
-            filterString
-                    .append(filters.get("genreId"))
-                    .append(" IN (SELECT genre_id FROM film_genre WHERE film_genre.film_id = f.film_id) ");
-        }
-
-        if (filters.containsKey("year")) {
-            if (isFirst) {
-                filterString.append("WHERE ");
-            } else {
-                filterString.append(" AND ");
-            }
-
-            filterString
-                    .append("EXTRACT(YEAR FROM f.release_date::date) = ")
-                    .append(filters.get("year"));
-        }
-
-        return filterString.toString();
-    }
-
     @Override
     public Collection<Film> getFilmsOfDirector(int directorID, String sortBy) {
         String sql = "SELECT * FROM film_director fd " +
@@ -260,6 +232,34 @@ public class FilmDbStorage implements FilmStorage {
         }
 
         return films;
+    }
+
+    private String generateFilterString(Map<String, Object> filters) {
+        StringBuilder filterString = new StringBuilder();
+        boolean isFirst = true;
+
+        if (filters.containsKey("genreId")) {
+            filterString.append("WHERE ");
+            isFirst = false;
+
+            filterString
+                    .append(filters.get("genreId"))
+                    .append(" IN (SELECT genre_id FROM film_genre WHERE film_genre.film_id = f.film_id) ");
+        }
+
+        if (filters.containsKey("year")) {
+            if (isFirst) {
+                filterString.append("WHERE ");
+            } else {
+                filterString.append(" AND ");
+            }
+
+            filterString
+                    .append("EXTRACT(YEAR FROM f.release_date::date) = ")
+                    .append(filters.get("year"));
+        }
+
+        return filterString.toString();
     }
 
     private int insertFilm(Film film) {
