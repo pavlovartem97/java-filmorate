@@ -20,6 +20,7 @@ import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorage;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @SpringBootTest
@@ -157,7 +158,7 @@ public class FilmDbStorageTests {
 
     @Test
     public void getTopFilmsTest() {
-        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(2));
+        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(Map.of("count", 2)));
 
         Assertions.assertEquals(films.size(), 2);
         Assertions.assertEquals(films.get(0).getId(), 1);
@@ -170,7 +171,7 @@ public class FilmDbStorageTests {
         filmDbStorage.addFavourite(2, 2);
         filmDbStorage.addFavourite(2, 3);
 
-        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(1));
+        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(Map.of("count", 1)));
         Assertions.assertEquals(films.size(), 1);
         Assertions.assertEquals(films.get(0).getId(), 2);
     }
@@ -180,9 +181,39 @@ public class FilmDbStorageTests {
         filmDbStorage.removeFavoutite(1, 2);
         filmDbStorage.removeFavoutite(1, 3);
 
-        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(1));
+        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(Map.of("count", 1)));
         Assertions.assertEquals(films.size(), 1);
         Assertions.assertEquals(films.get(0).getId(), 3);
+    }
+
+    @Test
+    void addFilteredFavouriteTest() {
+        Film film = Film.builder()
+                .name("film name")
+                .description("film_description")
+                .releaseDate(LocalDate.parse("2000-01-01"))
+                .duration(60)
+                .mpa(new Mpa(5, null))
+                .build();
+
+        filmDbStorage.addFilm(film);
+        Set<Genre> genres = film.getGenres();
+        genres.add(new Genre(1, null));
+        filmDbStorage.updateFilm(film);
+
+        filmDbStorage.addFavourite(4, 1);
+        filmDbStorage.addFavourite(4, 2);
+        filmDbStorage.addFavourite(4, 3);
+
+        List<Film> films = List.copyOf(filmDbStorage.findTopFilms(
+                Map.of("count", 5,
+                        "genreId", 1,
+                        "year", 2000)
+        ));
+
+        Assertions.assertEquals(2, films.size());
+        Assertions.assertEquals(4, films.get(0).getId());
+        Assertions.assertEquals(1, films.get(1).getId());
     }
 
     @Test

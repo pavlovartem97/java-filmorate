@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -107,17 +108,19 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> findTopFilms(int count) {
+    public Collection<Film> findTopFilms(Map<String, Object> filters) {
         String sql = "SELECT * " +
                 "FROM ( " +
                 "    SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, COUNT(fv.user_id) rating " +
                 "    FROM film f " +
-                "    LEFT JOIN favourite fv ON f.film_id = fv.film_id " +
+                "    LEFT JOIN favourite fv ON f.film_id = fv.film_id "
+                + generateFilterString(filters) +
                 "    GROUP BY f.film_id " +
                 "    ORDER BY rating desc, f.film_id " +
                 "    LIMIT ?) fl " +
                 "JOIN mpa m ON fl.mpa_id = m.mpa_id ";
-        Collection<Film> films = jdbcTemplate.query(sql, filmMapper, count);
+
+        Collection<Film> films = jdbcTemplate.query(sql, filmMapper, filters.get("count"));
 
         for (Film film : films) {
             fillGenreAndDirector(film);
@@ -229,6 +232,34 @@ public class FilmDbStorage implements FilmStorage {
         }
 
         return films;
+    }
+
+    private String generateFilterString(Map<String, Object> filters) {
+        StringBuilder filterString = new StringBuilder();
+        boolean isFirst = true;
+
+        if (filters.containsKey("genreId")) {
+            filterString.append("WHERE ");
+            isFirst = false;
+
+            filterString
+                    .append(filters.get("genreId"))
+                    .append(" IN (SELECT genre_id FROM film_genre WHERE film_genre.film_id = f.film_id) ");
+        }
+
+        if (filters.containsKey("year")) {
+            if (isFirst) {
+                filterString.append("WHERE ");
+            } else {
+                filterString.append(" AND ");
+            }
+
+            filterString
+                    .append("EXTRACT(YEAR FROM f.release_date::date) = ")
+                    .append(filters.get("year"));
+        }
+
+        return filterString.toString();
     }
 
     private int insertFilm(Film film) {
