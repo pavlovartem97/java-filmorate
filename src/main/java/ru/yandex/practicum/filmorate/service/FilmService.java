@@ -105,7 +105,7 @@ public class FilmService {
             return searchFilmsByTitleAndDirector(query);
         } else if (by.contains("director")) {
             return searchFilmsByDirector(query);
-        } else if (by.contains("film")) {
+        } else if (by.contains("title")) {
             return searchFilmsByTitle(query);
         } else {
             throw new RuntimeException("Query not supported");
@@ -127,7 +127,7 @@ public class FilmService {
         List<Film> preliminary = new ArrayList<>(filmStorage.searchFilms());
         List<Film> foundFilms = new ArrayList<>();
         for (Film film : preliminary) {
-            if (film.getName().equals(query)) {
+            if (film.getName().toLowerCase().contains(query.toLowerCase())) {
                 foundFilms.add(film);
             }
         }
@@ -138,7 +138,7 @@ public class FilmService {
         List<Film> preliminary = new ArrayList<>(filmStorage.searchFilms());
         List<Film> foundFilms = new ArrayList<>();
         for (Film film : preliminary) {
-            if (film.getName().equals(query)) {
+            if (film.getName().toLowerCase().contains(query.toLowerCase())) {
                 foundFilms.add(film);
             } else {
                 if (confirmDirectorNamesAreQueried(film, query)) {
@@ -151,7 +151,7 @@ public class FilmService {
 
     private boolean confirmDirectorNamesAreQueried(Film film, String query) {
         for (Director director : film.getDirectors()) {
-            if (director.getName().toLowerCase().contains(query)) {
+            if (director.getName().toLowerCase().contains(query.toLowerCase())) {
                 return true;
             }
         }
