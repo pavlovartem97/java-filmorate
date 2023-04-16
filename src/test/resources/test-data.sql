@@ -28,3 +28,7 @@ VALUES (1, 2),
 INSERT INTO friend(user_id, friend_id, status)
 VALUES ( 1, 2, false ),
        ( 3, 2, false );
+
+INSERT INTO review(content, film_id, user_id, is_positive)
+VALUES ('content1', 1, 1, true),
+       ('content2', 1, 2, false);
