@@ -3,9 +3,11 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
@@ -21,6 +23,8 @@ public class FilmService {
     private final FilmStorage filmStorage;
 
     private final UserStorage userStorage;
+
+    private final DirectorStorage directorStorage;
 
     private final FilmValidator filmValidator;
 
@@ -76,6 +80,14 @@ public class FilmService {
         log.info("Film removed: " + filmId);
     }
 
+
+    public Collection<Film> getFilmsOfDirector(int directorID, String sortBy) {
+        checkDirector(directorID);
+        Collection<Film> films = filmStorage.getFilmsOfDirector(directorID, sortBy);
+        log.info("Get list of director films, his size {}", films.size());
+        return films;
+    }
+
     public Collection<Film> getCommonFilms(int userId, int friendId) {
         checkUser(userId);
         checkUser(friendId);
@@ -98,6 +110,12 @@ public class FilmService {
     private void checkFilm(int filmId) {
         if (!filmStorage.contains(filmId)) {
             throw new FilmNotFoundException("Film is not found: " + filmId);
+        }
+    }
+
+    private void checkDirector(int directorId) {
+        if (!directorStorage.contains(directorId)) {
+            throw new DirectorNotFoundException("Director with ID " + directorId + " not found");
         }
     }
 

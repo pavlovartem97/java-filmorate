@@ -11,7 +11,6 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -40,5 +39,5 @@ public class Film {
 
     private Mpa mpa;
 
-    private final Set<Director> directors = new HashSet<>();
+    private final Set<Director> directors = new TreeSet<>(Comparator.comparing(f -> f.getId()));
 }
