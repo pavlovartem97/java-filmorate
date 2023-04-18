@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import ru.yandex.practicum.filmorate.exception.UnacceptableQueryException;
 import ru.yandex.practicum.filmorate.mapper.DirectorMapper;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
@@ -244,14 +245,6 @@ public class FilmDbStorageTests {
     void searchFilmsTest() {
         List<Film> films = List.copyOf(filmDbStorage.searchFilms("Peace Man", Collections.singletonList("title")));
         Assertions.assertEquals(0, films.size());
-        List<String> testList = List.of("a", "b", "c");
-        RuntimeException ex = Assertions.assertThrows(RuntimeException.class, new Executable() {
-            @Override
-            public void execute() {
-                filmDbStorage.searchFilms("Peace Man", testList);
-            }
-        });
-        Assertions.assertEquals("Unacceptable query.", ex.getMessage());
         Film film = Film.builder()
                 .name("film to find")
                 .duration(100)

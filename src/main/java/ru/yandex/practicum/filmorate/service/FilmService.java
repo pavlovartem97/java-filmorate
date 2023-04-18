@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.UnacceptableQueryException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
@@ -99,6 +100,7 @@ public class FilmService {
     }
 
     public Collection<Film> searchFilms(String query, List<String> by) {
+        checkByQuery(by);
         return filmStorage.searchFilms(query, by);
     }
 
@@ -126,6 +128,15 @@ public class FilmService {
     private void checkUser(int userId) {
         if (!userStorage.contains(userId)) {
             throw new UserNotFoundException("User is not found: " + userId);
+        }
+    }
+
+    private void checkByQuery(List<String> by) {
+        if (by.isEmpty()) {
+            throw new UnacceptableQueryException("Please enter the 'by' search parameter. It cannot be empty.Must be" +
+                    " either 'director', or 'title'. Or you can search by both 'director' and 'title'.");
+        } else if (by.size() > 2) {
+            throw new UnacceptableQueryException("You can search by a max of two parameters: - director; - title.");
         }
     }
 }
