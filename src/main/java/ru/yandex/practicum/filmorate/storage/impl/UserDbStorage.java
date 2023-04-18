@@ -7,20 +7,30 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
 
 @Component
 @AllArgsConstructor
 public class UserDbStorage implements UserStorage {
+
     private final JdbcTemplate jdbcTemplate;
+
     private final UserMapper userMapper;
+
+
+    private final FeedDbStorage feedDbStorage;
 
     @Override
     public User addUser(User user) {
@@ -71,9 +81,29 @@ public class UserDbStorage implements UserStorage {
             sql = "UPDATE friend SET status = TRUE " +
                     "WHERE friend_id = ? AND user_id = ?";
             jdbcTemplate.update(sql, userId, friendId);
+
+            Feed feed = Feed.builder()
+                    .userId(friendId)
+                    .timestamp(Instant.now().toEpochMilli())
+                    .eventType(EventType.FRIEND)
+                    .operation(Operation.ADD)
+                    .entityId(userId)
+                    .build();
+
+            feedDbStorage.insertFeed(feed);
         } else {
             sql = "INSERT INTO friend (friend_id, user_id, status) VALUES ( ?, ?, FALSE )";
             jdbcTemplate.update(sql, friendId, userId);
+
+            Feed feed = Feed.builder()
+                    .userId(userId)
+                    .timestamp(Instant.now().toEpochMilli())
+                    .eventType(EventType.FRIEND)
+                    .operation(Operation.ADD)
+                    .entityId(friendId)
+                    .build();
+
+            feedDbStorage.insertFeed(feed);
         }
     }
 
@@ -82,9 +112,29 @@ public class UserDbStorage implements UserStorage {
         String sql = "DELETE FROM friend WHERE user_id = ? AND friend_id = ?";
         jdbcTemplate.update(sql, userId, friendId);
 
+        Feed feed = Feed.builder()
+                .userId(userId)
+                .timestamp(Instant.now().toEpochMilli())
+                .eventType(EventType.FRIEND)
+                .operation(Operation.REMOVE)
+                .entityId(friendId)
+                .build();
+
+        feedDbStorage.insertFeed(feed);
+
         sql = "UPDATE friend SET status = FALSE " +
                 "WHERE friend_id = ? AND user_id = ?";
         jdbcTemplate.update(sql, userId, friendId);
+
+//        feed = Feed.builder()
+//                .userId(friendId)
+//                .timestamp(Instant.now().toEpochMilli())
+//                .eventType(EventType.FRIEND)
+//                .operation(Operation.UPDATE)
+//                .entityId(userId)
+//                .build();
+//
+//        feedDbStorage.insertFeed(feed);
     }
 
     @Override
@@ -100,6 +150,11 @@ public class UserDbStorage implements UserStorage {
                         "                FROM friend " +
                         "                WHERE user_id = ?)) ";
         return jdbcTemplate.query(sql, userMapper, userId1, userId2, userId1);
+    }
+
+    @Override
+    public Collection<Feed> getFeed(int userId) {
+        return feedDbStorage.getFeed(userId);
     }
 
     @Override
@@ -141,4 +196,5 @@ public class UserDbStorage implements UserStorage {
 
         return keyHolder.getKey().intValue();
     }
+
 }

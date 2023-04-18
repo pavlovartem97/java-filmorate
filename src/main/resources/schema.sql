@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS MPA CASCADE;
 DROP TABLE IF EXISTS DIRECTOR CASCADE;
 DROP TABLE IF EXISTS REVIEW CASCADE;
 DROP TABLE IF EXISTS REVIEW_LIKE CASCADE;
+DROP TABLE IF EXISTS FEED CASCADE;
 
 create table if not exists GENRE
 (
@@ -148,3 +149,21 @@ create table if not exists REVIEW_LIKE
     constraint "REVIEW_ID_FILM_ID_USER_ID_pk"
         primary key (REVIEW_ID, USER_ID)
 );
+
+
+create table if not exists FEED
+(
+    EVENT_ID INTEGER NOT NULL auto_increment,
+    USER_ID INTEGER NOT NULL,
+    TIMESTAMP BIGINT,
+    EVENT_TYPE CHARACTER LARGE OBJECT,
+    OPERATION CHARACTER LARGE OBJECT,
+    ENTITY_ID INTEGER NOT NULL,
+    constraint "FEED_USER_ID_fk"
+    foreign key (USER_ID) references FILMORATE_USER
+    on delete cascade,
+    constraint "EVENT_ID_pk"
+    primary key (EVENT_ID)
+);
+
+

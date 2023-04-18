@@ -10,15 +10,12 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.mapper.DirectorMapper;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
-import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +32,9 @@ public class FilmDbStorage implements FilmStorage {
     private final FilmMapper filmMapper;
 
     private final DirectorMapper directorMapper;
+
+    private final FeedDbStorage feedDbStorage;
+
 
     @Override
     public void addFilm(Film film) {
@@ -99,12 +99,32 @@ public class FilmDbStorage implements FilmStorage {
     public void addFavourite(int filmId, int userId) {
         String sql = "INSERT INTO favourite (film_id, user_id) VALUES ( ?, ? )";
         jdbcTemplate.update(sql, filmId, userId);
+
+        Feed feed = Feed.builder()
+                .userId(userId)
+                .timestamp(Instant.now().toEpochMilli())
+                .eventType(EventType.LIKE)
+                .operation(Operation.ADD)
+                .entityId(filmId)
+                .build();
+
+        feedDbStorage.insertFeed(feed);
     }
 
     @Override
     public void removeFavoutite(int filmId, int userId) {
         String sql = "DELETE FROM favourite WHERE film_id = ? AND user_id = ?";
         jdbcTemplate.update(sql, filmId, userId);
+
+        Feed feed = Feed.builder()
+                .userId(userId)
+                .timestamp(Instant.now().toEpochMilli())
+                .eventType(EventType.LIKE)
+                .operation(Operation.REMOVE)
+                .entityId(filmId)
+                .build();
+
+        feedDbStorage.insertFeed(feed);
     }
 
     @Override

@@ -10,8 +10,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import ru.yandex.practicum.filmorate.mapper.FeedMapper;
 import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.storage.impl.FeedDbStorage;
 import ru.yandex.practicum.filmorate.storage.impl.ReviewDbStorage;
 
 import java.util.Optional;
@@ -25,6 +27,8 @@ public class ReviewDbStorageTests {
 
     private final ReviewMapper reviewMapper;
 
+    private final FeedMapper feedMapper;
+
     @BeforeEach
     public void setUp() {
         EmbeddedDatabase embeddedDatabase = new EmbeddedDatabaseBuilder()
@@ -34,7 +38,7 @@ public class ReviewDbStorageTests {
                 .setType(EmbeddedDatabaseType.H2)
                 .build();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
-        reviewDbStorage = new ReviewDbStorage(jdbcTemplate, reviewMapper);
+        reviewDbStorage = new ReviewDbStorage(jdbcTemplate, reviewMapper, new FeedDbStorage(jdbcTemplate, feedMapper));
     }
 
     @Test

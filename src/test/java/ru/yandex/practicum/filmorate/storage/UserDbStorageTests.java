@@ -10,7 +10,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import ru.yandex.practicum.filmorate.mapper.FeedMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.impl.FeedDbStorage;
 import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 
@@ -25,6 +27,9 @@ public class UserDbStorageTests {
 
     private final UserMapper userMapper;
 
+    private final FeedMapper feedMapper;
+
+
     @BeforeEach
     public void setUp() {
         EmbeddedDatabase embeddedDatabase = new EmbeddedDatabaseBuilder()
@@ -34,7 +39,7 @@ public class UserDbStorageTests {
                 .setType(EmbeddedDatabaseType.H2)
                 .build();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
-        userDbStorage = new UserDbStorage(jdbcTemplate, userMapper);
+        userDbStorage = new UserDbStorage(jdbcTemplate, userMapper, new FeedDbStorage(jdbcTemplate, feedMapper));
     }
 
     @Test
