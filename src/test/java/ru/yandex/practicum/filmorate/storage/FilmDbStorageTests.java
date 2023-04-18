@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,6 +20,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorage;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -236,5 +238,31 @@ public class FilmDbStorageTests {
         Assertions.assertEquals(2, films.size());
         Assertions.assertEquals(2, films.get(0).getId());
         Assertions.assertEquals(1, films.get(1).getId());
+    }
+
+    @Test
+    void searchFilmsTest() {
+        List<Film> films = List.copyOf(filmDbStorage.searchFilms("Peace Man", Collections.singletonList("title")));
+        Assertions.assertEquals(0, films.size());
+        List<String> testList = List.of("a", "b", "c");
+        RuntimeException ex = Assertions.assertThrows(RuntimeException.class, new Executable() {
+            @Override
+            public void execute() {
+                filmDbStorage.searchFilms("Peace Man", testList);
+            }
+        });
+        Assertions.assertEquals("Unacceptable query.", ex.getMessage());
+        Film film = Film.builder()
+                .name("film to find")
+                .duration(100)
+                .mpa(new Mpa(2, null))
+                .description("description4")
+                .releaseDate(LocalDate.parse("2011-10-01"))
+                .build();
+        filmDbStorage.addFilm(film);
+        List<Film> filmsAgain = List.copyOf(filmDbStorage.searchFilms("find",
+                Collections.singletonList("title")));
+        Assertions.assertEquals(1, filmsAgain.size());
+
     }
 }

@@ -126,16 +126,46 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> searchFilms() {
-        String sql = "SELECT * " +
-                "FROM ( " +
-                "    SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, COUNT(fv.user_id) rating " +
-                "    FROM film f " +
-                "    LEFT JOIN favourite fv ON f.film_id = fv.film_id " +
-                "    GROUP BY f.film_id " +
-                "    ORDER BY rating desc, f.film_id " +
-                "    ) fl " +
-                "JOIN mpa m ON fl.mpa_id = m.mpa_id ";
+    public Collection<Film> searchFilms(String query, List<String> by) {
+        String q = query.toLowerCase();
+        String sql;
+
+        if (by.isEmpty() || by.size() > 2) {
+            throw new RuntimeException("Unacceptable query.");
+        } else if (by.size() == 2) {
+            sql = "SELECT * FROM (SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, " +
+                    " COUNT(fv.user_id) rating FROM film f LEFT JOIN favourite fv ON f.film_id = fv.film_id " +
+                    " WHERE EXISTS (SELECT * FROM FILM f2 LEFT JOIN FILM_DIRECTOR fd ON f2.FILM_ID = fd.FILM_ID LEFT JOIN DIRECTOR d " +
+                    " ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
+                    " WHERE ((LOWER(f2.NAME) LIKE \'" + q + "%\' OR LOWER(f2.NAME) LIKE \'%" + q + "\' OR LOWER(f2.NAME) " +
+                    " LIKE \'%" + q + "%\') " +
+                    " OR (LOWER(d.DIRECTOR_NAME) LIKE \'" + q + "%\' OR LOWER(d.DIRECTOR_NAME) " +
+                    " LIKE \'%" + q + "\' OR LOWER(d.DIRECTOR_NAME) LIKE \'%" + q + "%\')) " +
+                    " AND f2.FILM_ID = f.FILM_ID) " +
+                    " GROUP BY f.film_id " +
+                    " ORDER BY rating desc, f.film_id) fl JOIN MPA m ON fl.mpa_id = m.MPA_ID";
+        } else if (by.get(0).equals("title")) {
+            sql = "SELECT * FROM (SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, " +
+                    " COUNT(fv.user_id) rating FROM film f LEFT JOIN favourite fv ON f.film_id = fv.film_id " +
+                    " WHERE EXISTS (SELECT * FROM FILM f2 LEFT JOIN FILM_DIRECTOR fd ON f2.FILM_ID = fd.FILM_ID LEFT JOIN DIRECTOR d " +
+                    " ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
+                    " WHERE (LOWER(f2.NAME) LIKE '" + q + "%' OR LOWER(f2.NAME) LIKE '%" + q + "' OR LOWER(f2.NAME) " +
+                    " LIKE '%" + q + "%') " +
+                    " AND f2.FILM_ID = f.FILM_ID) " +
+                    " GROUP BY f.film_id " +
+                    " ORDER BY rating desc, f.film_id) fl JOIN MPA m ON fl.mpa_id = m.MPA_ID";
+        } else {
+            sql = "SELECT * FROM (SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, " +
+                    " COUNT(fv.user_id) rating FROM film f LEFT JOIN favourite fv ON f.film_id = fv.film_id " +
+                    " WHERE EXISTS (SELECT * FROM FILM f2 LEFT JOIN FILM_DIRECTOR fd ON f2.FILM_ID = fd.FILM_ID LEFT JOIN DIRECTOR d " +
+                    " ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
+                    " WHERE (LOWER(d.DIRECTOR_NAME) LIKE \'" + q + "%\' OR LOWER(d.DIRECTOR_NAME) " +
+                    " LIKE \'%" + q + "\' OR LOWER(d.DIRECTOR_NAME) LIKE \'%" + q + "%\') " +
+                    " AND f2.FILM_ID = f.FILM_ID) " +
+                    " GROUP BY f.film_id " +
+                    " ORDER BY rating desc, f.film_id) fl JOIN MPA m ON fl.mpa_id = m.MPA_ID";
+        }
+
         Collection<Film> films = jdbcTemplate.query(sql, filmMapper);
 
         for (Film film : films) {
