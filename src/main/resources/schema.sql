@@ -7,6 +7,8 @@ DROP TABLE IF EXISTS FILM_DIRECTOR CASCADE;
 DROP TABLE IF EXISTS GENRE CASCADE;
 DROP TABLE IF EXISTS MPA CASCADE;
 DROP TABLE IF EXISTS DIRECTOR CASCADE;
+DROP TABLE IF EXISTS REVIEW CASCADE;
+DROP TABLE IF EXISTS REVIEW_LIKE CASCADE;
 
 create table if not exists GENRE
 (
@@ -114,3 +116,35 @@ create table if not exists FAVOURITE
         primary key (FILM_ID, USER_ID)
 );
 
+create table if not exists REVIEW
+(
+    REVIEW_ID   INTEGER not null AUTO_INCREMENT,
+    CONTENT     CHARACTER LARGE OBJECT not null,
+    FILM_ID     INTEGER not null,
+    USER_ID     INTEGER not null,
+    IS_POSITIVE BOOLEAN not null,
+    USEFUL      INTEGER not null default 0,
+    constraint "REVIEW_FILM_ID_fk"
+        foreign key (FILM_ID) references FILM
+            on delete cascade,
+    constraint "REVIEW_USER_ID_fk"
+        foreign key (USER_ID) references FILMORATE_USER
+            on delete cascade,
+    constraint "REVIEW_ID_pk"
+        primary key (REVIEW_ID)
+);
+
+create table if not exists REVIEW_LIKE
+(
+    REVIEW_ID INTEGER not null,
+    USER_ID   INTEGER not null,
+    IS_LIKE   BOOLEAN not null,
+    constraint "REVIEW_LIKE_USER_ID_fk"
+        foreign key (USER_ID) references FILMORATE_USER
+            on delete cascade,
+    constraint "REVIEW_LIKE_REVIEW_ID_fk"
+            foreign key (REVIEW_ID) references REVIEW
+                on delete cascade,
+    constraint "REVIEW_ID_FILM_ID_USER_ID_pk"
+        primary key (REVIEW_ID, USER_ID)
+);
