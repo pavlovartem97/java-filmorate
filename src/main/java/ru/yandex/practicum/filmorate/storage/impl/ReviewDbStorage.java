@@ -119,27 +119,24 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public void changeLikeState(int reviewId, int userId, boolean isLike, Operation addLike) {
-        Feed.FeedBuilder feedBuilder = Feed.builder();
-
-        feedBuilder.timestamp(Instant.now().toEpochMilli())
-                .eventType(EventType.REVIEW)
-                .entityId(reviewId);
-
         if (addLike.equals(Operation.REMOVE)) {
             deleteLike(reviewId, userId, isLike);
-            feedBuilder.operation(Operation.REMOVE);
-        } else {
-            feedBuilder.operation(Operation.ADD);
-            mergeLike(reviewId, userId, isLike);
-        }
 
-        feedBuilder.userId(userId);
+            Feed.FeedBuilder feedBuilder = Feed.builder();
+
+            feedBuilder.timestamp(Instant.now().toEpochMilli())
+                    .eventType(EventType.REVIEW)
+                    .entityId(reviewId);
+
+            feedBuilder.operation(Operation.REMOVE)
+                    .userId(userId);
+            Feed feed = feedBuilder.build();
+
+            feedDbStorage.insertFeed(feed);
+        } else
+            mergeLike(reviewId, userId, isLike);
 
         updateUseful(reviewId);
-
-        Feed feed = feedBuilder.build();
-
-        feedDbStorage.insertFeed(feed);
     }
 
     @Override
