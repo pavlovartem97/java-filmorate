@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,10 +16,11 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/films")
-@Slf4j
 @AllArgsConstructor
 public class FilmController {
 
@@ -59,8 +59,16 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getTopFilms(@RequestParam(defaultValue = "10") Integer count) {
-        return filmService.topFilms(count);
+    public Collection<Film> getTopFilms(@RequestParam(defaultValue = "10") Integer count,
+                                        @RequestParam(required = false) Integer genreId,
+                                        @RequestParam(required = false) Integer year) {
+        Map<String, Object> filters = new HashMap<>();
+
+        filters.put("count", count);
+        if (genreId != null) filters.put("genreId", genreId);
+        if (year != null) filters.put("year", year);
+
+        return filmService.topFilms(filters);
     }
 
     @GetMapping("/director/{directorId}")
