@@ -16,7 +16,6 @@ import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
@@ -37,8 +36,10 @@ public class ReviewDbStorage implements ReviewStorage {
         review.setUseful(0);
         review.setReviewId(id);
 
+        Optional<Review> reviewById = findReviewById(review.getReviewId());
+
         Feed feed = Feed.builder()
-                .userId(review.getUserId())
+                .userId(reviewById.get().getUserId())
                 .timestamp(Instant.now().toEpochMilli())
                 .eventType(EventType.REVIEW)
                 .operation(Operation.ADD)
@@ -54,9 +55,9 @@ public class ReviewDbStorage implements ReviewStorage {
                 "SET content = ?,  is_positive = ? " +
                 "WHERE review_id = ?";
         jdbcTemplate.update(sql, review.getContent(), review.getIsPositive(), review.getReviewId());
-
+        Optional<Review> reviewById = findReviewById(review.getReviewId());
         Feed feed = Feed.builder()
-                .userId(review.getUserId())
+                .userId(reviewById.get().getUserId())
                 .timestamp(Instant.now().toEpochMilli())
                 .eventType(EventType.REVIEW)
                 .operation(Operation.UPDATE)
@@ -120,8 +121,7 @@ public class ReviewDbStorage implements ReviewStorage {
     public void changeLikeState(int reviewId, int userId, boolean isLike, Operation addLike) {
         Feed.FeedBuilder feedBuilder = Feed.builder();
 
-        feedBuilder.userId(userId)
-                .timestamp(Instant.now().toEpochMilli())
+        feedBuilder.timestamp(Instant.now().toEpochMilli())
                 .eventType(EventType.REVIEW)
                 .entityId(reviewId);
 
@@ -132,6 +132,8 @@ public class ReviewDbStorage implements ReviewStorage {
             feedBuilder.operation(Operation.ADD);
             mergeLike(reviewId, userId, isLike);
         }
+
+        feedBuilder.userId(userId);
 
         updateUseful(reviewId);
 

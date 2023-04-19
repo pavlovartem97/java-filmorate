@@ -34,6 +34,7 @@ public class FeedDbStorage {
             preparedStatement.setInt(5, feed.getEntityId());
             return preparedStatement;
         }, keyHolder);
+        feed.setEventId(keyHolder.getKey().intValue());
         return keyHolder.getKey().intValue();
     }
 
