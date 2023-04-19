@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
@@ -64,11 +65,11 @@ public class ReviewService {
         return topReviews;
     }
 
-    public void changeLikeState(int reviewId, int userId, boolean isLike, boolean addLike) {
+    public void changeLikeState(int reviewId, int userId, boolean isLike, Operation addLike) {
         checkReview(reviewId);
         checkUser(userId);
         reviewStorage.changeLikeState(reviewId, userId, isLike, addLike);
-        log.debug("Like changed: reviewId = {}, userId = ?, isLike = ?, addLike = ?", reviewId, userId, isLike, addLike);
+        log.debug("Like changed: reviewId = {}, userId = {}, isLike = {}, addLike = {}", reviewId, userId, isLike, addLike.name());
     }
 
     private void checkReview(int reviewId) {
