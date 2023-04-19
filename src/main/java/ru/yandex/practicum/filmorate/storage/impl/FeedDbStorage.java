@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.mapper.FeedMapper;
 import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.storage.FeedStorage;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -14,14 +15,14 @@ import java.util.Collection;
 
 @Component
 @AllArgsConstructor
-public class FeedDbStorage {
+public class FeedDbStorage implements FeedStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
     private final FeedMapper feedMapper;
 
 
-    int insertFeed(Feed feed) {
+    public int insertFeed(Feed feed) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO feed (user_id, timestamp, event_type, operation, entity_id)" +
                 "VALUES (?, ?, ?, ?, ?)";
@@ -38,7 +39,7 @@ public class FeedDbStorage {
         return keyHolder.getKey().intValue();
     }
 
-    Collection<Feed> getFeed(int userId) {
+    public Collection<Feed> getFeed(int userId) {
         String sql = "SELECT * FROM feed WHERE user_id = ?";
         return jdbcTemplate.query(sql, feedMapper, userId);
     }
