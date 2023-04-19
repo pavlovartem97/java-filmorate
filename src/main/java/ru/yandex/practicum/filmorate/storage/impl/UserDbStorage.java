@@ -16,7 +16,6 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
