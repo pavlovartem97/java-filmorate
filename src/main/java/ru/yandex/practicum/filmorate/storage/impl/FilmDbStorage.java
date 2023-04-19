@@ -150,7 +150,7 @@ public class FilmDbStorage implements FilmStorage {
             sql += "WHERE (LOWER(d.DIRECTOR_NAME) LIKE '" + q + "%' OR LOWER(d.DIRECTOR_NAME) LIKE '%" + q + "' " +
                     "OR LOWER(d.DIRECTOR_NAME) LIKE '%" + q + "%') AND f2.FILM_ID = f.FILM_ID) ";
         }
-        
+
         sql += "GROUP BY f.film_id " +
                 "ORDER BY rating desc, f.film_id) fl JOIN MPA m ON fl.mpa_id = m.MPA_ID";
 
