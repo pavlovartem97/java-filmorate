@@ -1,8 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.model.enumerate.EventType;
+import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
 
 @Data
 @AllArgsConstructor
@@ -17,7 +20,8 @@ public class Feed {
 
     private EventType eventType;
 
-    private Operation operation;
+    @JsonProperty("operation")
+    private OperationType operationType;
 
     private Integer entityId;
 }

@@ -8,15 +8,12 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
-import ru.yandex.practicum.filmorate.model.EventType;
-import ru.yandex.practicum.filmorate.model.Feed;
-import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -28,25 +25,11 @@ public class ReviewDbStorage implements ReviewStorage {
 
     private final ReviewMapper reviewMapper;
 
-    private final FeedDbStorage feedDbStorage;
-
     @Override
     public void addReview(Review review) {
         int id = insertReview(review);
         review.setUseful(0);
         review.setReviewId(id);
-
-        Optional<Review> reviewById = findReviewById(review.getReviewId());
-
-        Feed feed = Feed.builder()
-                .userId(reviewById.get().getUserId())
-                .timestamp(Instant.now().toEpochMilli())
-                .eventType(EventType.REVIEW)
-                .operation(Operation.ADD)
-                .entityId(review.getReviewId())
-                .build();
-
-        feedDbStorage.insertFeed(feed);
     }
 
     @Override
@@ -55,38 +38,13 @@ public class ReviewDbStorage implements ReviewStorage {
                 "SET content = ?,  is_positive = ? " +
                 "WHERE review_id = ?";
         jdbcTemplate.update(sql, review.getContent(), review.getIsPositive(), review.getReviewId());
-        Optional<Review> reviewById = findReviewById(review.getReviewId());
-        Feed feed = Feed.builder()
-                .userId(reviewById.get().getUserId())
-                .timestamp(Instant.now().toEpochMilli())
-                .eventType(EventType.REVIEW)
-                .operation(Operation.UPDATE)
-                .entityId(review.getReviewId())
-                .build();
-
-        feedDbStorage.insertFeed(feed);
     }
 
     @Override
-    public void deleteReviewById(int reviewId) {
-        Optional<Review> reviewById = findReviewById(reviewId);
-
-        if (reviewById.isEmpty())
-            return;
-
+    public void deleteReviewById(int reviewId, int userId) {
         String sql = "DELETE FROM review " +
                 "WHERE review_id = ?";
         jdbcTemplate.update(sql, reviewId);
-
-        Feed feed = Feed.builder()
-                .userId(reviewById.get().getUserId())
-                .timestamp(Instant.now().toEpochMilli())
-                .eventType(EventType.REVIEW)
-                .operation(Operation.REMOVE)
-                .entityId(reviewId)
-                .build();
-
-        feedDbStorage.insertFeed(feed);
     }
 
     @Override
@@ -118,22 +76,10 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public void changeLikeState(int reviewId, int userId, boolean isLike, Operation addLike) {
-        if (addLike.equals(Operation.REMOVE)) {
+    public void changeLikeState(int reviewId, int userId, boolean isLike, OperationType addLike) {
+        if (addLike.equals(OperationType.REMOVE))
             deleteLike(reviewId, userId, isLike);
-
-            Feed.FeedBuilder feedBuilder = Feed.builder();
-
-            feedBuilder.timestamp(Instant.now().toEpochMilli())
-                    .eventType(EventType.REVIEW)
-                    .entityId(reviewId);
-
-            feedBuilder.operation(Operation.REMOVE)
-                    .userId(userId);
-            Feed feed = feedBuilder.build();
-
-            feedDbStorage.insertFeed(feed);
-        } else
+        else
             mergeLike(reviewId, userId, isLike);
 
         updateUseful(reviewId);

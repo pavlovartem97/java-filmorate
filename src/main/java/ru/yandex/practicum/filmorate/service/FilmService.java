@@ -6,12 +6,17 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.enumerate.EventType;
+import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 
@@ -26,17 +31,21 @@ public class FilmService {
 
     private final DirectorStorage directorStorage;
 
+    private final FeedStorage feedDbStorage;
+
     private final FilmValidator filmValidator;
 
     public void addLike(int filmId, int userId) {
         checkFilmIdAndUserId(filmId, userId);
         filmStorage.addFavourite(filmId, userId);
+        addFeed(userId, filmId, OperationType.ADD);
         log.info("User " + userId + " likes film " + filmId);
     }
 
     public void removeLike(int filmId, int userId) {
         checkFilmIdAndUserId(filmId, userId);
         filmStorage.removeFavoutite(filmId, userId);
+        addFeed(userId, filmId, OperationType.REMOVE);
         log.info("User " + userId + " removes like from film " + filmId);
     }
 
@@ -123,5 +132,16 @@ public class FilmService {
         if (!userStorage.contains(userId)) {
             throw new UserNotFoundException("User is not found: " + userId);
         }
+    }
+
+    private void addFeed(int userId, int filmId, OperationType operationType) {
+        Feed feed = Feed.builder()
+                .userId(userId)
+                .timestamp(Instant.now().toEpochMilli())
+                .eventType(EventType.LIKE)
+                .operationType(operationType)
+                .entityId(filmId)
+                .build();
+        feedDbStorage.addFeed(feed);
     }
 }

@@ -7,10 +7,14 @@ import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.enumerate.EventType;
+import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
+import ru.yandex.practicum.filmorate.storage.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.UserValidator;
 
+import java.time.Instant;
 import java.util.Collection;
 
 @Service
@@ -24,15 +28,22 @@ public class UserService {
 
     private final FilmStorage filmStorage;
 
+    private final FeedStorage feedDbStorage;
+
     public void addFriend(int id, int friendId) {
         checkUsers(id, friendId);
-        userStorage.addFriend(id, friendId);
+        int checkFriend = userStorage.addFriend(id, friendId);
+        if (checkFriend != 0)
+            addFeed(friendId, id, OperationType.ADD);
+        else
+            addFeed(id, friendId, OperationType.ADD);
         log.info("Put friend " + friendId + " for user " + id);
     }
 
     public void removeFriend(int id, int friendId) {
         checkUsers(id, friendId);
         userStorage.removeFriend(id, friendId);
+        addFeed(id, friendId, OperationType.REMOVE);
         log.info("Delete friend " + friendId + " for user " + id);
     }
 
@@ -93,7 +104,7 @@ public class UserService {
 
     public Collection<Feed> getFeed(int id) {
         checkUser(id);
-        Collection<Feed> feed = userStorage.getFeed(id);
+        Collection<Feed> feed = feedDbStorage.findFeedByUserId(id);
         log.info("Got" + feed.size() + " feeds objects");
         return feed;
     }
@@ -111,5 +122,16 @@ public class UserService {
         if (!userStorage.contains(userId2)) {
             throw new UserNotFoundException("User is not found: " + userId2);
         }
+    }
+
+    private void addFeed(int userId, int friendId, OperationType operationType) {
+        Feed feed = Feed.builder()
+                .userId(userId)
+                .timestamp(Instant.now().toEpochMilli())
+                .eventType(EventType.FRIEND)
+                .operationType(operationType)
+                .entityId(friendId)
+                .build();
+        feedDbStorage.addFeed(feed);
     }
 }

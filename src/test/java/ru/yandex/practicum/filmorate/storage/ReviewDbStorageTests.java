@@ -12,13 +12,12 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.yandex.practicum.filmorate.mapper.FeedMapper;
 import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
-import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.storage.impl.FeedDbStorage;
+import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
 import ru.yandex.practicum.filmorate.storage.impl.ReviewDbStorage;
 
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -27,8 +26,6 @@ public class ReviewDbStorageTests {
     private ReviewDbStorage reviewDbStorage;
 
     private final ReviewMapper reviewMapper;
-
-    private final FeedMapper feedMapper;
 
     @BeforeEach
     public void setUp() {
@@ -39,7 +36,7 @@ public class ReviewDbStorageTests {
                 .setType(EmbeddedDatabaseType.H2)
                 .build();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
-        reviewDbStorage = new ReviewDbStorage(jdbcTemplate, reviewMapper, new FeedDbStorage(jdbcTemplate, feedMapper));
+        reviewDbStorage = new ReviewDbStorage(jdbcTemplate, reviewMapper);
     }
 
     @Test
@@ -93,7 +90,7 @@ public class ReviewDbStorageTests {
 
     @Test
     public void deleteReviewTest() {
-        reviewDbStorage.deleteReviewById(1);
+        reviewDbStorage.deleteReviewById(1, 1);
 
         Optional<Review> reviewOptional = reviewDbStorage.findReviewById(1);
         Assertions.assertTrue(reviewOptional.isEmpty());
@@ -101,8 +98,8 @@ public class ReviewDbStorageTests {
 
     @Test
     public void findTopReviewTest() {
-        reviewDbStorage.changeLikeState(2, 2, true, Operation.ADD);
-        reviewDbStorage.changeLikeState(1, 2, false, Operation.ADD);
+        reviewDbStorage.changeLikeState(2, 2, true, OperationType.ADD);
+        reviewDbStorage.changeLikeState(1, 2, false, OperationType.ADD);
 
         List<Review> reviews = List.copyOf(reviewDbStorage.findTopReview(2));
         Assertions.assertEquals(2, reviews.size());
@@ -122,8 +119,8 @@ public class ReviewDbStorageTests {
 
     @Test
     public void changeTopReviewTest() {
-        reviewDbStorage.changeLikeState(2, 2, true, Operation.ADD);
-        reviewDbStorage.changeLikeState(1, 2, false, Operation.ADD);
+        reviewDbStorage.changeLikeState(2, 2, true, OperationType.ADD);
+        reviewDbStorage.changeLikeState(1, 2, false, OperationType.ADD);
 
         List<Review> reviews = List.copyOf(reviewDbStorage.findTopReview(2));
         Assertions.assertEquals(2, reviews.size());
@@ -132,8 +129,8 @@ public class ReviewDbStorageTests {
         Assertions.assertEquals(1, reviews.get(0).getUseful());
         Assertions.assertEquals(-1, reviews.get(1).getUseful());
 
-        reviewDbStorage.changeLikeState(2, 2, true, Operation.REMOVE);
-        reviewDbStorage.changeLikeState(1, 2, true, Operation.ADD);
+        reviewDbStorage.changeLikeState(2, 2, true, OperationType.REMOVE);
+        reviewDbStorage.changeLikeState(1, 2, true, OperationType.ADD);
 
         reviews = List.copyOf(reviewDbStorage.findTopReview(2));
         Assertions.assertEquals(2, reviews.size());

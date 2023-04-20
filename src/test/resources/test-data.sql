@@ -1,4 +1,4 @@
-INSERT INTO director(director_name) VALUES 'First Director';
+       INSERT INTO director(director_name) VALUES 'First Director';
 INSERT INTO director(director_name) VALUES 'Second Director';
 
 INSERT INTO filmorate_user(email, name, login, birthday)

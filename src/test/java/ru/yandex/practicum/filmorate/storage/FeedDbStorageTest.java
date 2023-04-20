@@ -11,9 +11,9 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.yandex.practicum.filmorate.mapper.FeedMapper;
-import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.enumerate.EventType;
 import ru.yandex.practicum.filmorate.model.Feed;
-import ru.yandex.practicum.filmorate.model.Operation;
+import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
 import ru.yandex.practicum.filmorate.storage.impl.FeedDbStorage;
 
 import java.time.Instant;
@@ -46,19 +46,19 @@ class FeedDbStorageTest {
                 .userId(1)
                 .timestamp(Instant.now().toEpochMilli())
                 .eventType(EventType.REVIEW)
-                .operation(Operation.ADD)
+                .operationType(OperationType.ADD)
                 .entityId(1)
                 .build();
 
-        int feedId = feedStorage.insertFeed(feed);
+        int feedId = feedStorage.addFeed(feed);
 
         Assertions.assertEquals(3, feedId);
     }
 
     @Test
     void getFeed() {
-        Collection<Feed> feedListUserId1 = feedStorage.getFeed(1);
-        Collection<Feed> feedListUserId2 = feedStorage.getFeed(2);
+        Collection<Feed> feedListUserId1 = feedStorage.findFeedByUserId(1);
+        Collection<Feed> feedListUserId2 = feedStorage.findFeedByUserId(2);
 
         Assertions.assertNotNull(feedListUserId1);
         Assertions.assertEquals(1, new ArrayList<>(feedListUserId1).get(0).getEventId());

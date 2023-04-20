@@ -17,7 +17,6 @@ import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.impl.FeedDbStorage;
 import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorage;
 
 import java.time.LocalDate;
@@ -48,7 +47,7 @@ public class FilmDbStorageTests {
                 .setType(EmbeddedDatabaseType.H2)
                 .build();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
-        filmDbStorage = new FilmDbStorage(jdbcTemplate, genreMapper, filmMapper, directorMapper, new FeedDbStorage(jdbcTemplate, feedMapper));
+        filmDbStorage = new FilmDbStorage(jdbcTemplate, genreMapper, filmMapper, directorMapper);
     }
 
     @Test

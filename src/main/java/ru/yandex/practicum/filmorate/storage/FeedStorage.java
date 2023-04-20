@@ -6,7 +6,7 @@ import java.util.Collection;
 
 public interface FeedStorage {
 
-    int insertFeed(Feed feed);
+    int addFeed(Feed feed);
 
-    Collection<Feed> getFeed(int userId);
+    Collection<Feed> findFeedByUserId(int userId);
 }
