@@ -6,9 +6,9 @@ import java.util.Arrays;
 
 @Getter
 public enum OperationType {
-    REMOVE ("REMOVE"),
-    ADD ("ADD"),
-    UPDATE ("UPDATE");
+    REMOVE("REMOVE"),
+    ADD("ADD"),
+    UPDATE("UPDATE");
 
     private final String type;
 

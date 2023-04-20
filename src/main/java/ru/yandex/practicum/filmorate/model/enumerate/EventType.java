@@ -6,9 +6,9 @@ import java.util.Arrays;
 
 @Getter
 public enum EventType {
-    LIKE ("LIKE"),
-    REVIEW ("REVIEW"),
-    FRIEND ("FRIEND");
+    LIKE("LIKE"),
+    REVIEW("REVIEW"),
+    FRIEND("FRIEND");
 
     private final String type;
 
