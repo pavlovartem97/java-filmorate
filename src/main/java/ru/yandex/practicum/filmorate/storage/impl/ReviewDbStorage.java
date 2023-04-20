@@ -41,7 +41,7 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public void deleteReviewById(int reviewId, int userId) {
+    public void deleteReviewById(int reviewId) {
         String sql = "DELETE FROM review " +
                 "WHERE review_id = ?";
         jdbcTemplate.update(sql, reviewId);
@@ -77,11 +77,11 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public void changeLikeState(int reviewId, int userId, boolean isLike, OperationType addLike) {
-        if (addLike.equals(OperationType.REMOVE))
+        if (addLike.equals(OperationType.REMOVE)) {
             deleteLike(reviewId, userId, isLike);
-        else
+        } else {
             mergeLike(reviewId, userId, isLike);
-
+        }
         updateUseful(reviewId);
     }
 

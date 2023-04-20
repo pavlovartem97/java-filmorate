@@ -11,7 +11,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.yandex.practicum.filmorate.mapper.DirectorMapper;
-import ru.yandex.practicum.filmorate.mapper.FeedMapper;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -35,8 +34,6 @@ public class FilmDbStorageTests {
     private final GenreMapper genreMapper;
 
     private final DirectorMapper directorMapper;
-
-    private final FeedMapper feedMapper;
 
     @BeforeEach
     public void setUp() {

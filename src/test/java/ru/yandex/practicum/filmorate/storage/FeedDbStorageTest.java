@@ -16,7 +16,6 @@ import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
 import ru.yandex.practicum.filmorate.storage.impl.FeedDbStorage;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -42,15 +41,7 @@ class FeedDbStorageTest {
 
     @Test
     void insertFeed() {
-        Feed feed = Feed.builder()
-                .userId(1)
-                .timestamp(Instant.now().toEpochMilli())
-                .eventType(EventType.REVIEW)
-                .operationType(OperationType.ADD)
-                .entityId(1)
-                .build();
-
-        int feedId = feedStorage.addFeed(feed);
+        int feedId = feedStorage.addFeed(1, 1, OperationType.ADD, EventType.REVIEW);
 
         Assertions.assertEquals(3, feedId);
     }

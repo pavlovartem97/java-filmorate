@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import ru.yandex.practicum.filmorate.mapper.FeedMapper;
 import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
@@ -90,7 +89,7 @@ public class ReviewDbStorageTests {
 
     @Test
     public void deleteReviewTest() {
-        reviewDbStorage.deleteReviewById(1, 1);
+        reviewDbStorage.deleteReviewById(1);
 
         Optional<Review> reviewOptional = reviewDbStorage.findReviewById(1);
         Assertions.assertTrue(reviewOptional.isEmpty());

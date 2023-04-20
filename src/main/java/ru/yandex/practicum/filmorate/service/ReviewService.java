@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.enumerate.EventType;
 import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
@@ -15,7 +14,6 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.time.Instant;
 import java.util.Collection;
 
 @Service
@@ -35,7 +33,7 @@ public class ReviewService {
         checkFilm(review.getFilmId());
         checkUser(review.getUserId());
         reviewStorage.addReview(review);
-        addFeed(review, OperationType.ADD);
+        feedStorage.addFeed(review.getUserId(), review.getReviewId(), OperationType.ADD, EventType.REVIEW);
         log.debug("Review added: reviewId = {}", review.getReviewId());
     }
 
@@ -44,8 +42,8 @@ public class ReviewService {
         checkUser(review.getUserId());
         checkReview(review.getReviewId());
         reviewStorage.updateReview(review);
-        addFeed(review, OperationType.UPDATE);
         Review resultReview = reviewStorage.findReviewById(review.getReviewId()).orElseThrow();
+        feedStorage.addFeed(resultReview.getUserId(), resultReview.getReviewId(), OperationType.UPDATE, EventType.REVIEW);
         log.debug("Review updated: reviewId = {} ", resultReview.getReviewId());
         return resultReview;
     }
@@ -53,8 +51,8 @@ public class ReviewService {
     public void delete(int reviewId) {
         checkReview(reviewId);
         Review review = get(reviewId);
-        reviewStorage.deleteReviewById(review.getReviewId(), review.getUserId());
-        addFeed(review, OperationType.REMOVE);
+        reviewStorage.deleteReviewById(review.getReviewId());
+        feedStorage.addFeed(review.getUserId(), review.getReviewId(), OperationType.REMOVE, EventType.REVIEW);
         log.debug("Review deleted: reviewId = {} ", reviewId);
     }
 
@@ -79,8 +77,10 @@ public class ReviewService {
         checkReview(reviewId);
         checkUser(userId);
         reviewStorage.changeLikeState(reviewId, userId, isLike, addLike);
-        if (addLike.equals(OperationType.REMOVE))
-            addFeed(get(reviewId), addLike);
+        if (addLike.equals(OperationType.REMOVE)) {
+            Review review = get(reviewId);
+            feedStorage.addFeed(review.getUserId(), review.getReviewId(), addLike, EventType.REVIEW);
+        }
         log.debug("Like changed: reviewId = {}, userId = {}, isLike = {}, addLike = {}", reviewId, userId, isLike, addLike);
     }
 
@@ -102,20 +102,4 @@ public class ReviewService {
         }
     }
 
-    private void addFeed(Review review, OperationType operationType) {
-        Review review1;
-        try {
-            review1 = get(review.getReviewId());
-        } catch (ReviewNotFoundException e) {
-            review1 = review;
-        }
-        Feed feed = Feed.builder()
-                .userId(review1.getUserId())
-                .timestamp(Instant.now().toEpochMilli())
-                .eventType(EventType.REVIEW)
-                .operationType(operationType)
-                .entityId(review1.getReviewId())
-                .build();
-        feedStorage.addFeed(feed);
-    }
 }

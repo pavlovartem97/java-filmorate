@@ -153,17 +153,17 @@ create table if not exists REVIEW_LIKE
 
 create table if not exists FEED
 (
-    EVENT_ID INTEGER NOT NULL auto_increment,
-    USER_ID INTEGER NOT NULL,
-    TIMESTAMP BIGINT,
-    EVENT_TYPE CHARACTER LARGE OBJECT,
-    OPERATION CHARACTER LARGE OBJECT,
-    ENTITY_ID INTEGER NOT NULL,
+    EVENT_ID INTEGER not null auto_increment,
+    USER_ID INTEGER not null,
+    TIMESTAMP BIGINT not null,
+    EVENT_TYPE CHARACTER LARGE OBJECT not null,
+    OPERATION CHARACTER LARGE OBJECT not null,
+    ENTITY_ID INTEGER not null,
     constraint "FEED_USER_ID_fk"
-    foreign key (USER_ID) references FILMORATE_USER
-    on delete cascade,
+        foreign key (USER_ID) references FILMORATE_USER
+            on delete cascade,
     constraint "EVENT_ID_pk"
-    primary key (EVENT_ID)
+        primary key (EVENT_ID)
 );
 
 

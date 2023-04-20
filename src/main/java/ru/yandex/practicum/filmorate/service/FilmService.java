@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.enumerate.EventType;
 import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
@@ -16,7 +15,6 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
 
-import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 
@@ -38,14 +36,14 @@ public class FilmService {
     public void addLike(int filmId, int userId) {
         checkFilmIdAndUserId(filmId, userId);
         filmStorage.addFavourite(filmId, userId);
-        addFeed(userId, filmId, OperationType.ADD);
+        feedDbStorage.addFeed(userId, filmId, OperationType.ADD, EventType.LIKE);
         log.info("User " + userId + " likes film " + filmId);
     }
 
     public void removeLike(int filmId, int userId) {
         checkFilmIdAndUserId(filmId, userId);
         filmStorage.removeFavoutite(filmId, userId);
-        addFeed(userId, filmId, OperationType.REMOVE);
+        feedDbStorage.addFeed(userId, filmId, OperationType.REMOVE, EventType.LIKE);
         log.info("User " + userId + " removes like from film " + filmId);
     }
 
@@ -134,14 +132,4 @@ public class FilmService {
         }
     }
 
-    private void addFeed(int userId, int filmId, OperationType operationType) {
-        Feed feed = Feed.builder()
-                .userId(userId)
-                .timestamp(Instant.now().toEpochMilli())
-                .eventType(EventType.LIKE)
-                .operationType(operationType)
-                .entityId(filmId)
-                .build();
-        feedDbStorage.addFeed(feed);
-    }
 }

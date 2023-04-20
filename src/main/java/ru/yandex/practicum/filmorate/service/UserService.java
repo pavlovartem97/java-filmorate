@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.UserValidator;
 
-import java.time.Instant;
 import java.util.Collection;
 
 @Service
@@ -33,17 +32,18 @@ public class UserService {
     public void addFriend(int id, int friendId) {
         checkUsers(id, friendId);
         int checkFriend = userStorage.addFriend(id, friendId);
-        if (checkFriend != 0)
-            addFeed(friendId, id, OperationType.ADD);
-        else
-            addFeed(id, friendId, OperationType.ADD);
+        if (checkFriend != 0) {
+            feedDbStorage.addFeed(friendId, id, OperationType.ADD, EventType.FRIEND);
+        } else {
+            feedDbStorage.addFeed(id, friendId, OperationType.ADD, EventType.FRIEND);
+        }
         log.info("Put friend " + friendId + " for user " + id);
     }
 
     public void removeFriend(int id, int friendId) {
         checkUsers(id, friendId);
         userStorage.removeFriend(id, friendId);
-        addFeed(id, friendId, OperationType.REMOVE);
+        feedDbStorage.addFeed(id, friendId, OperationType.REMOVE, EventType.FRIEND);
         log.info("Delete friend " + friendId + " for user " + id);
     }
 
@@ -124,14 +124,4 @@ public class UserService {
         }
     }
 
-    private void addFeed(int userId, int friendId, OperationType operationType) {
-        Feed feed = Feed.builder()
-                .userId(userId)
-                .timestamp(Instant.now().toEpochMilli())
-                .eventType(EventType.FRIEND)
-                .operationType(operationType)
-                .entityId(friendId)
-                .build();
-        feedDbStorage.addFeed(feed);
-    }
 }
