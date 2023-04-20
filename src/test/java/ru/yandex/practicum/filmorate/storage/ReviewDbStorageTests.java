@@ -12,10 +12,11 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
 import ru.yandex.practicum.filmorate.storage.impl.ReviewDbStorage;
 
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -96,8 +97,8 @@ public class ReviewDbStorageTests {
 
     @Test
     public void findTopReviewTest() {
-        reviewDbStorage.changeLikeState(2, 2, true, true);
-        reviewDbStorage.changeLikeState(1, 2, false, true);
+        reviewDbStorage.changeLikeState(2, 2, true, OperationType.ADD);
+        reviewDbStorage.changeLikeState(1, 2, false, OperationType.ADD);
 
         List<Review> reviews = List.copyOf(reviewDbStorage.findTopReview(2));
         Assertions.assertEquals(2, reviews.size());
@@ -117,8 +118,8 @@ public class ReviewDbStorageTests {
 
     @Test
     public void changeTopReviewTest() {
-        reviewDbStorage.changeLikeState(2, 2, true, true);
-        reviewDbStorage.changeLikeState(1, 2, false, true);
+        reviewDbStorage.changeLikeState(2, 2, true, OperationType.ADD);
+        reviewDbStorage.changeLikeState(1, 2, false, OperationType.ADD);
 
         List<Review> reviews = List.copyOf(reviewDbStorage.findTopReview(2));
         Assertions.assertEquals(2, reviews.size());
@@ -127,8 +128,8 @@ public class ReviewDbStorageTests {
         Assertions.assertEquals(1, reviews.get(0).getUseful());
         Assertions.assertEquals(-1, reviews.get(1).getUseful());
 
-        reviewDbStorage.changeLikeState(2, 2, true, false);
-        reviewDbStorage.changeLikeState(1, 2, true, true);
+        reviewDbStorage.changeLikeState(2, 2, true, OperationType.REMOVE);
+        reviewDbStorage.changeLikeState(1, 2, true, OperationType.ADD);
 
         reviews = List.copyOf(reviewDbStorage.findTopReview(2));
         Assertions.assertEquals(2, reviews.size());

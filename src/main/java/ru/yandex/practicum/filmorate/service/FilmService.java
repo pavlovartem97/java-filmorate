@@ -8,7 +8,10 @@ import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UnacceptableQueryException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.enumerate.EventType;
+import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
@@ -28,17 +31,21 @@ public class FilmService {
 
     private final DirectorStorage directorStorage;
 
+    private final FeedStorage feedDbStorage;
+
     private final FilmValidator filmValidator;
 
     public void addLike(int filmId, int userId) {
         checkFilmIdAndUserId(filmId, userId);
         filmStorage.addFavourite(filmId, userId);
+        feedDbStorage.addFeed(userId, filmId, OperationType.ADD, EventType.LIKE);
         log.info("User " + userId + " likes film " + filmId);
     }
 
     public void removeLike(int filmId, int userId) {
         checkFilmIdAndUserId(filmId, userId);
         filmStorage.removeFavoutite(filmId, userId);
+        feedDbStorage.addFeed(userId, filmId, OperationType.REMOVE, EventType.LIKE);
         log.info("User " + userId + " removes like from film " + filmId);
     }
 
@@ -140,4 +147,5 @@ public class FilmService {
             throw new UnacceptableQueryException("You can search by a max of two parameters: - director; - title.");
         }
     }
+
 }

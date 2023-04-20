@@ -7,6 +7,9 @@ import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.model.enumerate.EventType;
+import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
+import ru.yandex.practicum.filmorate.storage.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -24,10 +27,13 @@ public class ReviewService {
 
     private final FilmStorage filmStorage;
 
+    private final FeedStorage feedStorage;
+
     public void add(Review review) {
         checkFilm(review.getFilmId());
         checkUser(review.getUserId());
         reviewStorage.addReview(review);
+        feedStorage.addFeed(review.getUserId(), review.getReviewId(), OperationType.ADD, EventType.REVIEW);
         log.debug("Review added: reviewId = {}", review.getReviewId());
     }
 
@@ -37,13 +43,16 @@ public class ReviewService {
         checkReview(review.getReviewId());
         reviewStorage.updateReview(review);
         Review resultReview = reviewStorage.findReviewById(review.getReviewId()).orElseThrow();
+        feedStorage.addFeed(resultReview.getUserId(), resultReview.getReviewId(), OperationType.UPDATE, EventType.REVIEW);
         log.debug("Review updated: reviewId = {} ", resultReview.getReviewId());
         return resultReview;
     }
 
     public void delete(int reviewId) {
         checkReview(reviewId);
-        reviewStorage.deleteReviewById(reviewId);
+        Review review = get(reviewId);
+        reviewStorage.deleteReviewById(review.getReviewId());
+        feedStorage.addFeed(review.getUserId(), review.getReviewId(), OperationType.REMOVE, EventType.REVIEW);
         log.debug("Review deleted: reviewId = {} ", reviewId);
     }
 
@@ -64,11 +73,15 @@ public class ReviewService {
         return topReviews;
     }
 
-    public void changeLikeState(int reviewId, int userId, boolean isLike, boolean addLike) {
+    public void changeLikeState(int reviewId, int userId, boolean isLike, OperationType addLike) {
         checkReview(reviewId);
         checkUser(userId);
         reviewStorage.changeLikeState(reviewId, userId, isLike, addLike);
-        log.debug("Like changed: reviewId = {}, userId = ?, isLike = ?, addLike = ?", reviewId, userId, isLike, addLike);
+        if (addLike.equals(OperationType.REMOVE)) {
+            Review review = get(reviewId);
+            feedStorage.addFeed(review.getUserId(), review.getReviewId(), addLike, EventType.REVIEW);
+        }
+        log.debug("Like changed: reviewId = {}, userId = {}, isLike = {}, addLike = {}", reviewId, userId, isLike, addLike);
     }
 
     private void checkReview(int reviewId) {
@@ -88,4 +101,5 @@ public class ReviewService {
             throw new FilmNotFoundException("Film is not found " + filmId);
         }
     }
+
 }

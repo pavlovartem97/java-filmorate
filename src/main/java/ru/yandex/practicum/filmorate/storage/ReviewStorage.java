@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.Collection;
@@ -19,7 +20,7 @@ public interface ReviewStorage {
 
     Collection<Review> findTopReview(int count);
 
-    void changeLikeState(int reviewId, int userId, boolean isLike, boolean addLike);
+    void changeLikeState(int reviewId, int userId, boolean isLike, OperationType addLike);
 
     boolean contains(int reviewId);
 }

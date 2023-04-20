@@ -1,4 +1,4 @@
-INSERT INTO director(director_name) VALUES 'First Director';
+       INSERT INTO director(director_name) VALUES 'First Director';
 INSERT INTO director(director_name) VALUES 'Second Director';
 
 INSERT INTO filmorate_user(email, name, login, birthday)
@@ -32,3 +32,7 @@ VALUES ( 1, 2, false ),
 INSERT INTO review(content, film_id, user_id, is_positive)
 VALUES ('content1', 1, 1, true),
        ('content2', 1, 2, false);
+
+INSERT INTO feed(user_id, timestamp, event_type, operation, entity_id)
+VALUES (1, 1000000, 'ADD', 'REVIEW', 1),
+       (2, 1000444, 'ADD', 'REVIEW', 2);

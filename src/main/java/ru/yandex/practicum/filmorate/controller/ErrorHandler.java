@@ -7,11 +7,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.OperationNotFoundException;
+
+
+
 
 import java.util.Map;
 
@@ -28,7 +32,7 @@ public class ErrorHandler {
 
     @ExceptionHandler({FilmNotFoundException.class, UserNotFoundException.class,
             GenreNotFoundException.class, MpaNotFoundException.class,
-            ReviewNotFoundException.class, DirectorNotFoundException.class})
+            ReviewNotFoundException.class, DirectorNotFoundException.class, OperationNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleFileNotFoundException(final RuntimeException e) {
         log.error(e.getMessage(), e.getStackTrace());

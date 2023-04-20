@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
@@ -52,21 +53,21 @@ public class ReviewController {
 
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable("id") int reviewId, @PathVariable("userId") int userId) {
-        reviewService.changeLikeState(reviewId, userId, true, true);
+        reviewService.changeLikeState(reviewId, userId, true, OperationType.ADD);
     }
 
     @PutMapping("/{id}/dislike/{userId}")
     public void addDislike(@PathVariable("id") int reviewId, @PathVariable("userId") int userId) {
-        reviewService.changeLikeState(reviewId, userId, false, true);
+        reviewService.changeLikeState(reviewId, userId, false, OperationType.ADD);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLike(@PathVariable("id") int reviewId, @PathVariable("userId") int userId) {
-        reviewService.changeLikeState(reviewId, userId, true, false);
+        reviewService.changeLikeState(reviewId, userId, true, OperationType.REMOVE);
     }
 
     @DeleteMapping("/{id}/dislike/{userId}")
     public void deleteDislike(@PathVariable("id") int reviewId, @PathVariable("userId") int userId) {
-        reviewService.changeLikeState(reviewId, userId, false, false);
+        reviewService.changeLikeState(reviewId, userId, false, OperationType.REMOVE);
     }
 }

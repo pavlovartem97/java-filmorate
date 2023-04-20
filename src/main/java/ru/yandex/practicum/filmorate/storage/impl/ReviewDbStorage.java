@@ -9,6 +9,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 
 import java.sql.PreparedStatement;
@@ -75,13 +76,12 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public void changeLikeState(int reviewId, int userId, boolean isLike, boolean addLike) {
-        if (addLike) {
-            mergeLike(reviewId, userId, isLike);
-        } else {
+    public void changeLikeState(int reviewId, int userId, boolean isLike, OperationType addLike) {
+        if (addLike.equals(OperationType.REMOVE)) {
             deleteLike(reviewId, userId, isLike);
+        } else {
+            mergeLike(reviewId, userId, isLike);
         }
-
         updateUseful(reviewId);
     }
 

@@ -4,8 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.enumerate.EventType;
+import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
+import ru.yandex.practicum.filmorate.storage.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.UserValidator;
@@ -23,15 +27,23 @@ public class UserService {
 
     private final FilmStorage filmStorage;
 
+    private final FeedStorage feedDbStorage;
+
     public void addFriend(int id, int friendId) {
         checkUsers(id, friendId);
-        userStorage.addFriend(id, friendId);
+        int checkFriend = userStorage.addFriend(id, friendId);
+        if (checkFriend != 0) {
+            feedDbStorage.addFeed(friendId, id, OperationType.ADD, EventType.FRIEND);
+        } else {
+            feedDbStorage.addFeed(id, friendId, OperationType.ADD, EventType.FRIEND);
+        }
         log.info("Put friend " + friendId + " for user " + id);
     }
 
     public void removeFriend(int id, int friendId) {
         checkUsers(id, friendId);
         userStorage.removeFriend(id, friendId);
+        feedDbStorage.addFeed(id, friendId, OperationType.REMOVE, EventType.FRIEND);
         log.info("Delete friend " + friendId + " for user " + id);
     }
 
@@ -90,6 +102,13 @@ public class UserService {
         return recommendationFilms;
     }
 
+    public Collection<Feed> getFeed(int id) {
+        checkUser(id);
+        Collection<Feed> feed = feedDbStorage.findFeedByUserId(id);
+        log.info("Got" + feed.size() + " feeds objects");
+        return feed;
+    }
+
     private void checkUser(int userId) {
         if (!userStorage.contains(userId)) {
             throw new UserNotFoundException("User is not found: " + userId);
@@ -104,4 +123,5 @@ public class UserService {
             throw new UserNotFoundException("User is not found: " + userId2);
         }
     }
+
 }

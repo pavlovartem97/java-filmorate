@@ -36,6 +36,7 @@ public class FilmDbStorage implements FilmStorage {
 
     private final DirectorMapper directorMapper;
 
+
     @Override
     public void addFilm(Film film) {
         int id = insertFilm(film);
@@ -97,7 +98,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void addFavourite(int filmId, int userId) {
-        String sql = "INSERT INTO favourite (film_id, user_id) VALUES ( ?, ? )";
+        String sql = "MERGE INTO favourite (film_id, user_id) VALUES ( ?, ? )";
         jdbcTemplate.update(sql, filmId, userId);
     }
 
