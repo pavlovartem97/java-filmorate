@@ -1,9 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -18,26 +16,27 @@ import java.util.TreeSet;
 @Setter
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Film {
 
-    private Integer id;
+    Integer id;
 
     @NotBlank(message = "Film name cannot be blank")
-    private String name;
+    String name;
 
     @NotBlank(message = "Film description cannot be blank")
     @Size(min = 1, max = 200, message = "Description max length cannot be over 200 characters")
-    private String description;
+    String description;
 
     @NotNull(message = "Release date should be set")
-    private LocalDate releaseDate;
+    LocalDate releaseDate;
 
     @Positive
-    private Integer duration;
+    Integer duration;
 
-    private final Set<Genre> genres = new TreeSet<>(Comparator.comparing(f -> f.getId()));
+    final Set<Genre> genres = new TreeSet<>(Comparator.comparing(Genre::getId));
 
-    private Mpa mpa;
+    Mpa mpa;
 
-    private final Set<Director> directors = new TreeSet<>(Comparator.comparing(f -> f.getId()));
+    final Set<Director> directors = new TreeSet<>(Comparator.comparing(Director::getId));
 }

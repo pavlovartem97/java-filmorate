@@ -1,27 +1,30 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.filmorate.model.enumerate.EventType;
 import ru.yandex.practicum.filmorate.model.enumerate.OperationType;
 
 @Data
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Feed {
 
-    private Integer eventId;
+    Integer eventId;
 
-    private Integer userId;
+    Integer userId;
 
-    private Long timestamp;
+    Long timestamp;
 
-    private EventType eventType;
+    EventType eventType;
 
     @JsonProperty("operation")
-    private OperationType operationType;
+    OperationType operationType;
 
-    private Integer entityId;
+    Integer entityId;
 }

@@ -31,7 +31,7 @@ public class MpaDbStorage implements MpaStorage {
         try {
             return jdbcTemplate.queryForObject(sql, mpaMapper, id);
         } catch (DataAccessException ex) {
-            throw new MpaNotFoundException("Mpa with Id " + id + " is not found");
+            throw new MpaNotFoundException(String.format("Mpa with Id %d is not found", id));
         }
     }
 }

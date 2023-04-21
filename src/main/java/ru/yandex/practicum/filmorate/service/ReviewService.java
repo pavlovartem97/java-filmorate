@@ -59,7 +59,7 @@ public class ReviewService {
     public Review get(int reviewId) {
         Review review = reviewStorage.findReviewById(reviewId)
                 .orElseThrow(() -> {
-                    throw new ReviewNotFoundException("Review is not found " + reviewId);
+                    throw new ReviewNotFoundException(String.format("Review is not found %d", reviewId));
                 });
         log.debug("Review got: reviewId = {}", reviewId);
         return review;
@@ -86,19 +86,19 @@ public class ReviewService {
 
     private void checkReview(int reviewId) {
         if (!reviewStorage.contains(reviewId)) {
-            throw new ReviewNotFoundException("Review is not found " + reviewId);
+            throw new ReviewNotFoundException(String.format("Review is not found %d", reviewId));
         }
     }
 
     private void checkUser(int userId) {
         if (!userStorage.contains(userId)) {
-            throw new UserNotFoundException("User is not found " + userId);
+            throw new UserNotFoundException(String.format("User is not found %d", userId));
         }
     }
 
     private void checkFilm(int filmId) {
         if (!filmStorage.contains(filmId)) {
-            throw new FilmNotFoundException("Film is not found " + filmId);
+            throw new FilmNotFoundException(String.format("Film is not found %d", filmId));
         }
     }
 
