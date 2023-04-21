@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
@@ -19,15 +21,16 @@ import java.util.Collection;
 @Service
 @Slf4j
 @AllArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ReviewService {
 
-    private final ReviewStorage reviewStorage;
+    ReviewStorage reviewStorage;
 
-    private final UserStorage userStorage;
+    UserStorage userStorage;
 
-    private final FilmStorage filmStorage;
+    FilmStorage filmStorage;
 
-    private final FeedStorage feedStorage;
+    FeedStorage feedStorage;
 
     public void add(Review review) {
         checkFilm(review.getFilmId());
@@ -59,7 +62,7 @@ public class ReviewService {
     public Review get(int reviewId) {
         Review review = reviewStorage.findReviewById(reviewId)
                 .orElseThrow(() -> {
-                    throw new ReviewNotFoundException("Review is not found " + reviewId);
+                    throw new ReviewNotFoundException(String.format("Review is not found %d", reviewId));
                 });
         log.debug("Review got: reviewId = {}", reviewId);
         return review;
@@ -86,19 +89,19 @@ public class ReviewService {
 
     private void checkReview(int reviewId) {
         if (!reviewStorage.contains(reviewId)) {
-            throw new ReviewNotFoundException("Review is not found " + reviewId);
+            throw new ReviewNotFoundException(String.format("Review is not found %d", reviewId));
         }
     }
 
     private void checkUser(int userId) {
         if (!userStorage.contains(userId)) {
-            throw new UserNotFoundException("User is not found " + userId);
+            throw new UserNotFoundException(String.format("User is not found %d", userId));
         }
     }
 
     private void checkFilm(int filmId) {
         if (!filmStorage.contains(filmId)) {
-            throw new FilmNotFoundException("Film is not found " + filmId);
+            throw new FilmNotFoundException(String.format("Film is not found %d", filmId));
         }
     }
 

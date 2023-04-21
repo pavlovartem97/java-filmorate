@@ -31,7 +31,7 @@ public class GenreDbStorage implements GenreStorage {
         try {
             return jdbcTemplate.queryForObject(sql, genreMapper, id);
         } catch (DataAccessException ex) {
-            throw new GenreNotFoundException("Genre with Id " + id + " is not found");
+            throw new GenreNotFoundException(String.format("Genre with Id %d is not found", id));
         }
     }
 }

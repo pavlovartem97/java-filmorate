@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
@@ -23,48 +25,49 @@ import java.util.Map;
 @Service
 @Slf4j
 @AllArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class FilmService {
 
-    private final FilmStorage filmStorage;
+    FilmStorage filmStorage;
 
-    private final UserStorage userStorage;
+    UserStorage userStorage;
 
-    private final DirectorStorage directorStorage;
+    DirectorStorage directorStorage;
 
-    private final FeedStorage feedDbStorage;
+    FeedStorage feedDbStorage;
 
-    private final FilmValidator filmValidator;
+    FilmValidator filmValidator;
 
     public void addLike(int filmId, int userId) {
         checkFilmIdAndUserId(filmId, userId);
         filmStorage.addFavourite(filmId, userId);
         feedDbStorage.addFeed(userId, filmId, OperationType.ADD, EventType.LIKE);
-        log.info("User " + userId + " likes film " + filmId);
+        log.info("User {} likes film {}", userId, filmId);
     }
 
     public void removeLike(int filmId, int userId) {
         checkFilmIdAndUserId(filmId, userId);
         filmStorage.removeFavoutite(filmId, userId);
         feedDbStorage.addFeed(userId, filmId, OperationType.REMOVE, EventType.LIKE);
-        log.info("User " + userId + " removes like from film " + filmId);
+        log.info("User {} removes like from film {}", userId, filmId);
     }
 
     public Collection<Film> topFilms(Map<String, Object> filters) {
         Collection<Film> topFilms = filmStorage.findTopFilms(filters);
-        log.info("Got top " + topFilms.size() + " films");
+        log.info("Got top {} films", topFilms.size());
         return topFilms;
     }
 
     public Collection<Film> getAllFilms() {
         Collection<Film> films = filmStorage.findAll();
-        log.info("Film list getting " + films);
+        log.info("Film list getting {}", films);
         return films;
     }
 
     public Film getFilmById(int filmId) {
         Film film = filmStorage.findFilmById(filmId)
                 .orElseThrow(() -> {
-                    throw new FilmNotFoundException("Film is not found: " + filmId);
+                    throw new FilmNotFoundException(String.format("Film is not found: %d", filmId));
                 });
         log.info("Get film by id " + film);
         return film;
@@ -73,20 +76,20 @@ public class FilmService {
     public void addFilm(Film film) {
         filmValidator.validate(film);
         filmStorage.addFilm(film);
-        log.info("New film creating: " + film);
+        log.info("New film creating: {}", film);
     }
 
     public void updateFilm(Film film) {
         filmValidator.validate(film);
         checkFilm(film.getId());
         filmStorage.updateFilm(film);
-        log.info("Film updating: " + film);
+        log.info("Film updating: {}", film);
     }
 
     public void deleteFilm(int filmId) {
         checkFilm(filmId);
         filmStorage.deleteFilm(filmId);
-        log.info("Film removed: " + filmId);
+        log.info("Film removed: {}", filmId);
     }
 
 
@@ -102,7 +105,7 @@ public class FilmService {
         checkUser(friendId);
 
         Collection<Film> commonFilms = filmStorage.getCommonFilms(userId, friendId);
-        log.info("Got " + commonFilms.size() + " common films");
+        log.info("Got {}} common films", commonFilms.size());
 
         return commonFilms;
     }
@@ -114,28 +117,28 @@ public class FilmService {
 
     private void checkFilmIdAndUserId(int filmId, int userId) {
         if (!filmStorage.contains(filmId)) {
-            throw new FilmNotFoundException("Film is not found: " + filmId);
+            throw new FilmNotFoundException(String.format("Film is not found: %d", filmId));
         }
         if (!userStorage.contains(userId)) {
-            throw new UserNotFoundException("User is not found: " + userId);
+            throw new UserNotFoundException(String.format("User is not found: %d", userId));
         }
     }
 
     private void checkFilm(int filmId) {
         if (!filmStorage.contains(filmId)) {
-            throw new FilmNotFoundException("Film is not found: " + filmId);
+            throw new FilmNotFoundException(String.format("Film is not found: %d", filmId));
         }
     }
 
     private void checkDirector(int directorId) {
         if (!directorStorage.contains(directorId)) {
-            throw new DirectorNotFoundException("Director with ID " + directorId + " not found");
+            throw new DirectorNotFoundException(String.format("Director with ID %d not found", directorId));
         }
     }
 
     private void checkUser(int userId) {
         if (!userStorage.contains(userId)) {
-            throw new UserNotFoundException("User is not found: " + userId);
+            throw new UserNotFoundException(String.format("User is not found: %d", userId));
         }
     }
 

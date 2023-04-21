@@ -20,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class DirectorDbStorageTests {
     private DirectorDbStorage dbStorage;
+
     private final DirectorMapper directorMapper;
 
     @BeforeEach

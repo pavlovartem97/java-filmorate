@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,15 +28,16 @@ import java.util.Optional;
 
 @Component
 @AllArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class FilmDbStorage implements FilmStorage {
 
-    private final JdbcTemplate jdbcTemplate;
+    JdbcTemplate jdbcTemplate;
 
-    private final GenreMapper genreMapper;
+    GenreMapper genreMapper;
 
-    private final FilmMapper filmMapper;
+    FilmMapper filmMapper;
 
-    private final DirectorMapper directorMapper;
+    DirectorMapper directorMapper;
 
 
     @Override

@@ -13,6 +13,7 @@ import java.util.Collection;
 @Slf4j
 @AllArgsConstructor
 public class DirectorService {
+
     private final DirectorStorage directorStorage;
 
     public Collection<Director> getAllDirectors() {
@@ -24,7 +25,7 @@ public class DirectorService {
     public Director getDirectorByID(int id) {
         Director director = directorStorage.getDirectorByID(id)
                 .orElseThrow(() -> {
-                    throw new DirectorNotFoundException("Director with ID " + id + " not found");
+                    throw new DirectorNotFoundException(String.format("Director with ID %d not found", id));
                 });
         log.info("Find director with ID {} his name {}", director.getId(), director.getName());
         return director;
@@ -51,7 +52,7 @@ public class DirectorService {
 
     private void checkDirector(int directorID) {
         if (!directorStorage.contains(directorID)) {
-            throw new DirectorNotFoundException("Director with ID " + directorID + " not found");
+            throw new DirectorNotFoundException(String.format("Director with ID %d not found", directorID));
         }
     }
 }
