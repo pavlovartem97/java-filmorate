@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
@@ -23,17 +25,18 @@ import java.util.Map;
 @Service
 @Slf4j
 @AllArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class FilmService {
 
-    private final FilmStorage filmStorage;
+    FilmStorage filmStorage;
 
-    private final UserStorage userStorage;
+    UserStorage userStorage;
 
-    private final DirectorStorage directorStorage;
+    DirectorStorage directorStorage;
 
-    private final FeedStorage feedDbStorage;
+    FeedStorage feedDbStorage;
 
-    private final FilmValidator filmValidator;
+    FilmValidator filmValidator;
 
     public void addLike(int filmId, int userId) {
         checkFilmIdAndUserId(filmId, userId);

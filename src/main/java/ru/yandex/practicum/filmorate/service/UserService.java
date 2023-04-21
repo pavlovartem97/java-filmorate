@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
@@ -19,15 +21,16 @@ import java.util.Collection;
 @Service
 @Slf4j
 @AllArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class UserService {
 
-    private final UserValidator userValidator;
+    UserValidator userValidator;
 
-    private final UserStorage userStorage;
+    UserStorage userStorage;
 
-    private final FilmStorage filmStorage;
+    FilmStorage filmStorage;
 
-    private final FeedStorage feedDbStorage;
+    FeedStorage feedDbStorage;
 
     public void addFriend(int id, int friendId) {
         checkUsers(id, friendId);

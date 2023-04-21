@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
@@ -19,15 +21,16 @@ import java.util.Collection;
 @Service
 @Slf4j
 @AllArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ReviewService {
 
-    private final ReviewStorage reviewStorage;
+    ReviewStorage reviewStorage;
 
-    private final UserStorage userStorage;
+    UserStorage userStorage;
 
-    private final FilmStorage filmStorage;
+    FilmStorage filmStorage;
 
-    private final FeedStorage feedStorage;
+    FeedStorage feedStorage;
 
     public void add(Review review) {
         checkFilm(review.getFilmId());
