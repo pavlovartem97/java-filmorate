@@ -10,9 +10,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
-import ru.yandex.practicum.filmorate.mapper.UserMapper;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,6 +24,7 @@ public class UserDbStorageTests {
     private UserDbStorage userDbStorage;
 
     private final UserMapper userMapper;
+
 
     @BeforeEach
     public void setUp() {
@@ -99,7 +100,7 @@ public class UserDbStorageTests {
     @Test
     public void deleteUser() {
         User user = userDbStorage.findUserById(2).orElseThrow();
-        userDbStorage.deleteUser(user);
+        userDbStorage.deleteUser(user.getId());
 
         List<User> users = List.copyOf(userDbStorage.getAll());
         Assertions.assertEquals(users.size(), 2);

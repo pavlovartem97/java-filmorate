@@ -19,7 +19,9 @@ import java.util.Optional;
 @Component
 @AllArgsConstructor
 public class UserDbStorage implements UserStorage {
+
     private final JdbcTemplate jdbcTemplate;
+
     private final UserMapper userMapper;
 
     @Override
@@ -38,9 +40,9 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void deleteUser(User user) {
+    public void deleteUser(int userId) {
         String sql = "DELETE FROM filmorate_user WHERE user_id = ?";
-        jdbcTemplate.update(sql, user.getId());
+        jdbcTemplate.update(sql, userId);
     }
 
     @Override
@@ -60,7 +62,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void addFriend(int userId, int friendId) {
+    public int addFriend(int userId, int friendId) {
         String sql = "SELECT FROM friend WHERE friend_id = ? AND user_id = ?";
         int checkFriend = jdbcTemplate.query(sql, (rs, rowNum) -> 1, userId, friendId).size();
 
@@ -71,10 +73,12 @@ public class UserDbStorage implements UserStorage {
             sql = "UPDATE friend SET status = TRUE " +
                     "WHERE friend_id = ? AND user_id = ?";
             jdbcTemplate.update(sql, userId, friendId);
+
         } else {
             sql = "INSERT INTO friend (friend_id, user_id, status) VALUES ( ?, ?, FALSE )";
             jdbcTemplate.update(sql, friendId, userId);
         }
+        return checkFriend;
     }
 
     @Override
@@ -85,6 +89,7 @@ public class UserDbStorage implements UserStorage {
         sql = "UPDATE friend SET status = FALSE " +
                 "WHERE friend_id = ? AND user_id = ?";
         jdbcTemplate.update(sql, userId, friendId);
+
     }
 
     @Override
@@ -141,4 +146,5 @@ public class UserDbStorage implements UserStorage {
 
         return keyHolder.getKey().intValue();
     }
+
 }

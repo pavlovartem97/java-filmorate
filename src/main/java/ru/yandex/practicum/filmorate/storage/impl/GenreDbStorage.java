@@ -9,8 +9,6 @@ import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @Component
@@ -33,7 +31,7 @@ public class GenreDbStorage implements GenreStorage {
         try {
             return jdbcTemplate.queryForObject(sql, genreMapper, id);
         } catch (DataAccessException ex) {
-            throw new GenreNotFoundException("Genre with Id " + id + " is not found");
+            throw new GenreNotFoundException(String.format("Genre with Id %d is not found", id));
         }
     }
 }

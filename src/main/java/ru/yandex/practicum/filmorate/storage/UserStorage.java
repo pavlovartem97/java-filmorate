@@ -11,13 +11,13 @@ public interface UserStorage {
 
     void updateUser(User user);
 
-    void deleteUser(User user);
+    void deleteUser(int userId);
 
     Collection<User> getAll();
 
     Optional<User> findUserById(int id);
 
-    void addFriend(int userId, int friendId);
+    int addFriend(int userId, int friendId);
 
     void removeFriend(int userId, int friendId);
 

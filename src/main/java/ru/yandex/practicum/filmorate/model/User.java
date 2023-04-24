@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -15,18 +17,19 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
-    private Integer id;
+    Integer id;
 
-    private String name;
+    String name;
 
     @Email(message = "Email is in wrong format")
-    private String email;
+    String email;
 
     @NotEmpty(message = "Login cannot be empty")
     @Pattern(regexp = "\\S+", message = "Login cannot contain spaces")
-    private String login;
+    String login;
 
     @Past(message = "Birthday is in the wrong format")
-    private LocalDate birthday;
+    LocalDate birthday;
 }
